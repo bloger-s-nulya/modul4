@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Бонусный гайд — Голосовые заметки и свой стиль в ChatGPT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --bg-soft: #F5F6F7;
+  --bg-muted: #EDEEF0;
+  --ink: #1A1A1A;
+  --ink-2: #4A4D52;
+  --ink-3: #8A8E94;
+  --line: #E4E6E9;
+  --accent: #C4F542;
+  --accent-strong: #B8E83D;
+  --accent-ink: #0F1A00;
+  --font-display: 'Unbounded', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 3px; background: var(--line); }
+.progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.2s; }
+
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.nav-title { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--ink); }
+.nav-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--accent); color: var(--accent-ink);
+  padding: 5px 12px; border-radius: var(--radius-pill);
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+.wrap { max-width: 760px; margin: 0 auto; padding: 64px 32px 120px; }
+
+/* ——— HERO ——— */
+.hero { margin-bottom: 56px; }
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--ink-3); }
+.hero-title {
+  display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start;
+  margin-bottom: 24px;
+}
+.stamp {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 14px; background: var(--ink); color: #fff;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-top: 8px; white-space: nowrap;
+}
+.title-text {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(24px, 3.5vw, 36px); line-height: 1.1; letter-spacing: -0.02em;
+}
+.hero-lead { font-size: 17px; font-weight: 500; line-height: 1.6; color: var(--ink-2); margin-bottom: 20px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--bg-soft); border: 1px solid var(--line);
+  border-radius: var(--radius-pill); font-size: 12px; font-weight: 500;
+  color: var(--ink-2); font-family: var(--font-mono);
+}
+
+/* ——— ЧАСТИ ГАЙДА — TABS ——— */
+.parts-nav {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-bottom: 56px;
+}
+.part-tab {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 20px 22px; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  text-decoration: none; color: inherit; display: block;
+}
+.part-tab:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.part-tab-num {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-3); margin-bottom: 6px;
+}
+.part-tab-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+.part-tab-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; line-height: 1.2; margin-bottom: 6px; }
+.part-tab-sub { font-size: 13px; color: var(--ink-2); }
+
+/* ——— SECTIONS ——— */
+.section {
+  margin-bottom: 64px; padding-top: 40px; border-top: 1px solid var(--line);
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.section.visible { opacity: 1; transform: translateY(0); }
+.section-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+.section h2 { font-family: var(--font-display); font-weight: 500; font-size: 22px; letter-spacing: -0.01em; margin-bottom: 20px; }
+.section-part {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--ink); color: #fff;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 4px; margin-bottom: 16px;
+}
+.section-part.green { background: var(--accent); color: var(--accent-ink); }
+
+/* ——— KEY POINT ——— */
+.key-point {
+  display: flex; gap: 16px; background: var(--bg-soft);
+  border-radius: var(--radius-md); padding: 20px 24px;
+  border-left: 3px solid var(--accent); margin: 20px 0;
+}
+.key-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; padding-top: 3px; }
+.key-point p { font-weight: 500; margin: 0; }
+
+/* ——— CARD ——— */
+.card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 24px 28px; margin: 16px 0; }
+.card-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 14px; }
+
+/* ——— STEPS ——— */
+.steps { counter-reset: step; list-style: none; padding: 0; display: grid; gap: 0; }
+.steps li {
+  counter-increment: step;
+  display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: start;
+  padding: 16px 0; border-bottom: 1px solid var(--line);
+}
+.steps li:last-child { border-bottom: none; }
+.steps li::before { content: counter(step, decimal-leading-zero); font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--ink-3); padding-top: 3px; }
+.step-title { font-weight: 600; margin-bottom: 4px; }
+.step-desc { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+.step-tag {
+  display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px; margin-top: 6px;
+}
+.tag-phone { background: #EDE9FE; color: #5B21B6; }
+.tag-bot { background: #DBEAFE; color: #1D4ED8; }
+.tag-gpt { background: #D1FAE5; color: #065F46; }
+.tag-you { background: rgba(196,245,66,0.25); color: var(--accent-ink); border: 1px solid var(--accent); }
+
+/* ——— СХЕМА WORKFLOW ——— */
+.workflow {
+  display: flex; flex-direction: column; gap: 0;
+  margin: 20px 0; position: relative;
+}
+.workflow::before {
+  content: ''; position: absolute;
+  left: 27px; top: 28px; bottom: 28px;
+  width: 2px; background: var(--line);
+  z-index: 0;
+}
+.wf-step {
+  display: grid; grid-template-columns: 56px 1fr; gap: 16px; align-items: start;
+  padding: 14px 0; position: relative; z-index: 1;
+}
+.wf-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+  border: 2px solid var(--line); background: var(--bg);
+}
+.wf-step.active .wf-icon { border-color: var(--accent); background: #FAFFF0; }
+.wf-content { padding-top: 12px; }
+.wf-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.wf-desc { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+.wf-tools {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+}
+.wf-tool {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: var(--radius-pill);
+  background: var(--bg-soft); border: 1px solid var(--line);
+  color: var(--ink-2);
+}
+.wf-tool.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* ——— СЕРВИСЫ ——— */
+.services { display: grid; gap: 12px; margin: 16px 0; }
+.service {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 20px 22px; display: grid; grid-template-columns: 48px 1fr; gap: 16px; align-items: start;
+  transition: border-color 0.2s;
+}
+.service:hover { border-color: var(--accent); }
+.service.recommended { border-color: var(--accent); background: #FAFFF0; }
+.service-icon { font-size: 28px; text-align: center; padding-top: 4px; }
+.service-badge {
+  display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--accent); color: var(--accent-ink);
+  padding: 3px 8px; border-radius: 4px; margin-bottom: 6px;
+}
+.service-name { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+.service-handle { font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); margin-bottom: 8px; }
+.service-pros { list-style: none; display: grid; gap: 4px; }
+.service-pros li { font-size: 13px; color: var(--ink-2); display: flex; gap: 8px; }
+.service-pros li::before { content: '·'; color: var(--accent-strong); font-weight: 700; flex-shrink: 0; }
+.service-con { font-size: 12px; color: var(--ink-3); margin-top: 8px; font-family: var(--font-mono); }
+
+/* ——— ПРОМТЫ ——— */
+.prompt-block {
+  background: var(--bg-soft); border: 1px solid var(--line);
+  border-radius: var(--radius-md); overflow: hidden; margin: 16px 0;
+}
+.prompt-header {
+  padding: 10px 18px; background: var(--bg-muted);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.prompt-label { font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.copy-btn {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 10px; cursor: pointer;
+  color: var(--ink-2); transition: all 0.15s;
+}
+.copy-btn:hover, .copy-btn.copied { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.prompt-body {
+  padding: 16px 18px; font-family: var(--font-mono); font-size: 13px;
+  line-height: 1.75; color: var(--ink);
+}
+.ph { background: rgba(196,245,66,0.3); border-radius: 4px; padding: 1px 5px; color: var(--accent-ink); }
+.prompt-tip { padding: 10px 18px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--ink-3); line-height: 1.5; }
+
+/* ——— БАЗА ИДЕЙ ——— */
+.idea-base {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0;
+}
+.idea-cell {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 16px; text-align: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.idea-cell:hover { border-color: var(--accent); background: #FAFFF0; }
+.idea-cell-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+.idea-cell-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.idea-cell-desc { font-size: 12px; color: var(--ink-3); }
+
+/* ——— TOV БЛОКИ ——— */
+.tov-scale {
+  margin: 20px 0; display: grid; gap: 10px;
+}
+.tov-row {
+  display: grid; grid-template-columns: 140px 1fr 140px; gap: 12px; align-items: center;
+}
+.tov-label-l { font-size: 13px; font-weight: 600; text-align: right; color: var(--ink); }
+.tov-label-r { font-size: 13px; font-weight: 600; color: var(--ink-3); }
+.tov-bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.tov-fill { height: 100%; background: var(--accent); border-radius: 99px; }
+
+/* ——— BEFORE/AFTER ——— */
+.before-after {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0;
+}
+.ba-box { border-radius: var(--radius-md); padding: 18px 20px; }
+.ba-box.before { background: #F9FAFB; border: 1px solid var(--line); }
+.ba-box.after { background: #FAFFF0; border: 1px solid var(--accent); }
+.ba-label {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 10px; display: block;
+}
+.ba-box.before .ba-label { color: var(--ink-3); }
+.ba-box.after .ba-label { color: #16A34A; }
+.ba-text { font-size: 14px; line-height: 1.7; color: var(--ink); }
+
+/* ——— CHECKLIST ——— */
+.checklist { list-style: none; padding: 0; display: grid; gap: 10px; }
+.checklist li {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 18px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--radius-md); cursor: pointer;
+  transition: border-color 0.2s, background 0.2s; user-select: none;
+}
+.checklist li:hover { border-color: var(--ink-3); }
+.checklist li.done { background: #FAFFF0; border-color: var(--accent); }
+.check-box {
+  flex: 0 0 22px; width: 22px; height: 22px; border-radius: 7px;
+  border: 1.5px solid var(--line); margin-top: 2px;
+  transition: all 0.2s; position: relative; background: var(--bg);
+}
+.checklist li.done .check-box { background: var(--accent); border-color: var(--accent); }
+.checklist li.done .check-box::after {
+  content: ''; position: absolute; left: 6px; top: 2px;
+  width: 6px; height: 11px;
+  border-right: 2px solid var(--accent-ink);
+  border-bottom: 2px solid var(--accent-ink);
+  transform: rotate(45deg);
+}
+.task-title { font-weight: 600; font-size: 15px; }
+.task-meta { font-size: 12px; color: var(--ink-3); margin-top: 3px; font-family: var(--font-mono); }
+
+/* ——— NOTE ——— */
+.note-field { background: var(--bg-soft); border: 1px dashed #C4C7CC; border-radius: var(--radius-md); padding: 20px; margin: 16px 0; }
+.note-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px; }
+.note-textarea {
+  width: 100%; border: none; background: transparent; resize: none;
+  font-family: var(--font-body); font-size: 15px; color: var(--ink);
+  line-height: 1.8; outline: none;
+  background-image: repeating-linear-gradient(transparent, transparent 28px, var(--line) 28px, var(--line) 29px);
+  min-height: 112px;
+}
+.note-textarea::placeholder { color: var(--ink-3); }
+
+/* ——— PROGRESS ——— */
+.progress-wrap { background: var(--bg-soft); border-radius: var(--radius-lg); padding: 24px 28px; margin: 24px 0; }
+.progress-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px; display: flex; justify-content: space-between; }
+.progress-track { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.progress-done { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
+
+/* ——— DIVIDER ——— */
+.divider { display: flex; align-items: center; gap: 16px; margin: 28px 0; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+/* ——— CALLOUT ——— */
+.callout-dark {
+  background: var(--ink); color: #fff;
+  border-radius: var(--radius-lg); padding: 28px 32px; margin: 24px 0;
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.callout-dark.visible { opacity: 1; transform: translateY(0); }
+.callout-dark h3 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin-bottom: 10px; }
+.callout-dark p { color: #CFD1D4; font-size: 15px; line-height: 1.65; }
+
+/* ——— BUTTONS ——— */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-weight: 600; font-size: 15px;
+  padding: 14px 24px; border-radius: var(--radius-pill);
+  border: none; cursor: pointer; transition: all 0.15s; text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: var(--accent-strong); }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn-ghost:hover { background: var(--bg-muted); }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+
+.hl { background: var(--accent); color: var(--accent-ink); padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+.hl-line { background-image: linear-gradient(transparent 55%, var(--accent) 55%, var(--accent) 92%, transparent 92%); padding: 0 2px; font-weight: 600; }
+
+.service-trial {
+  margin-top: 10px; font-size: 13px; color: var(--ink-2);
+  padding: 10px 12px; background: rgba(196,245,66,0.12);
+  border-radius: 8px; border: 1px solid rgba(196,245,66,0.4);
+  line-height: 1.5;
+}
+.trial-badge {
+  display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--accent); color: var(--accent-ink);
+  padding: 3px 8px; border-radius: 4px; margin-bottom: 5px;
+}
+
+/* ——— ОТСЫЛКА К УРОКАМ ——— */
+.lesson-ref {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--bg-soft); border: 1px solid var(--line);
+  border-radius: var(--radius-md); padding: 18px 20px;
+  margin-top: 20px;
+}
+.lesson-ref-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.lesson-ref-label {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-3); margin-bottom: 6px;
+}
+.lesson-ref p { font-size: 14px; color: var(--ink-2); line-height: 1.6; margin: 0; }
+.lesson-ref strong { color: var(--ink); }
+
+@media (max-width: 640px) {
+  .nav { padding: 12px 20px; }
+  .nav-title { display: none; }
+  .wrap { padding: 40px 20px 80px; }
+  .hero-title { grid-template-columns: 1fr; }
+  .parts-nav { grid-template-columns: 1fr; }
+  .before-after { grid-template-columns: 1fr; }
+  .idea-base { grid-template-columns: 1fr 1fr; }
+  .tov-row { grid-template-columns: 1fr; }
+  .tov-label-l { text-align: left; }
+  .workflow::before { left: 27px; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="nav">
+  <div class="nav-brand">Модуль 4 · Бонус</div>
+  <div class="nav-title">Голосовые и свой стиль</div>
+  <div class="nav-badge">Бонусный гайд</div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-eyebrow">Модуль 4 · Бонусный гайд</div>
+    <div class="hero-title">
+      <span class="stamp">Бонус</span>
+      <span class="title-text">Голосовые заметки и свой стиль в ChatGPT</span>
+    </div>
+    <p class="hero-lead">Как наговорить идею на ходу и получить готовый пост. И как научить ChatGPT писать именно вашим голосом — так, чтобы подписчики не замечали разницы.</p>
+    <div class="chips">
+      <span class="chip">2 части</span>
+      <span class="chip">Без интернета</span>
+      <span class="chip">Готовые промты</span>
+      <span class="chip">Все тарифы</span>
+    </div>
+  </header>
+
+  <!-- НАВИГАЦИЯ ПО ЧАСТЯМ -->
+  <div class="parts-nav">
+    <a href="#part1" class="part-tab">
+      <div class="part-tab-num">Часть 1</div>
+      <span class="part-tab-icon">🎙️</span>
+      <div class="part-tab-title">Голосовые → контент</div>
+      <div class="part-tab-sub">Наговорила на ходу — получила пост</div>
+    </a>
+    <a href="#part2" class="part-tab">
+      <div class="part-tab-num">Часть 2</div>
+      <span class="part-tab-icon">🎨</span>
+      <div class="part-tab-title">Свой стиль в ChatGPT</div>
+      <div class="part-tab-sub">Обучаем ИИ вашему tone of voice</div>
+    </a>
+  </div>
+
+  <!-- ===================== ЧАСТЬ 1 ===================== -->
+
+  <section class="section" id="part1">
+    <div class="section-label">Часть 1 из 2</div>
+    <div class="section-part">🎙️ Голосовые → контент</div>
+    <h2>Наговорила идею на ходу — получила готовый пост</h2>
+
+    <p style="margin-bottom: 16px;">Идеи приходят в дороге, в душе, на прогулке с коляской — там, где открывать ноутбук невозможно. Решение: <span class="hl-line">наговорить голосовую</span> и дальше превратить её в контент с помощью транскрибации и ChatGPT.</p>
+
+    <div class="key-point">
+      <div class="key-label">Главное</div>
+      <p>Не нужен стабильный интернет и не нужно ничего печатать. Говорите в диктофон — остальное сделают бот и ChatGPT.</p>
+    </div>
+
+    <div class="lesson-ref">
+      <div class="lesson-ref-icon">📖</div>
+      <div>
+        <div class="lesson-ref-label">Из следующих уроков</div>
+        <p>Как именно формулировать запросы к ChatGPT, чтобы получать качественные тексты — подробно разбирается в <strong>Уроке 2</strong>. Там же — как за один сеанс собрать контент-план на всю неделю.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- СХЕМА WORKFLOW -->
+  <section class="section" id="s-workflow">
+    <div class="section-label">Схема работы</div>
+    <h2>Весь путь от мысли до поста</h2>
+
+    <div class="workflow">
+      <div class="wf-step active">
+        <div class="wf-icon">🎙️</div>
+        <div class="wf-content">
+          <div class="wf-title">Говорите в диктофон</div>
+          <div class="wf-desc">Записываете голосовую прямо на телефоне — на ходу, в машине, на прогулке. Интернет не нужен. Говорите как думаете: хаотично, с паузами, с оговорками — всё нормально.</div>
+          <div class="wf-tools">
+            <span class="wf-tool accent">Диктофон на телефоне</span>
+            <span class="wf-tool">Без интернета</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-step active">
+        <div class="wf-icon">📲</div>
+        <div class="wf-content">
+          <div class="wf-title">Отправляете боту в Telegram</div>
+          <div class="wf-desc">Когда появился интернет — пересылаете аудио боту. Он расшифровывает и возвращает текст. Это называется транскрибация.</div>
+          <div class="wf-tools">
+            <span class="wf-tool accent">@WhisperSummaryAI_bot</span>
+            <span class="wf-tool">Буквица</span>
+            <span class="wf-tool">Telegram Premium</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-step active">
+        <div class="wf-icon">📝</div>
+        <div class="wf-content">
+          <div class="wf-title">Копируете текст в ChatGPT</div>
+          <div class="wf-desc">Берёте сырую расшифровку и просите ChatGPT её причесать, структурировать и превратить в нужный формат.</div>
+          <div class="wf-tools">
+            <span class="wf-tool accent">ChatGPT</span>
+            <span class="wf-tool">Готовые промты ↓</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-step active">
+        <div class="wf-icon">✨</div>
+        <div class="wf-content">
+          <div class="wf-title">Добавляете своё — публикуете</div>
+          <div class="wf-desc">Вычитываете, добавляете 30% своего голоса по правилу из Урока 2. Готово.</div>
+          <div class="wf-tools">
+            <span class="wf-tool">Правило 70/30</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- СЕРВИСЫ -->
+  <section class="section" id="s-services">
+    <div class="section-label">Инструменты</div>
+    <h2>Чем расшифровывать голосовые</h2>
+
+    <div class="key-point" style="margin-bottom: 24px;">
+      <div class="key-label">Почему не просто голосовой ввод?</div>
+      <p>Стандартный голосовой ввод на телефоне распознаёт слова, но не расставляет знаки препинания, не разбивает на абзацы и теряется на паузах. Боты-транскрибаторы работают иначе: они обрабатывают весь аудиофайл целиком, распознают интонации, расставляют знаки и выдают читаемый текст — который уже можно отдавать в ChatGPT без лишней чистки.</p>
+    </div>
+
+    <div class="services">
+
+      <div class="service recommended">
+        <div class="service-icon">🤖</div>
+        <div>
+          <div class="service-badge">Рекомендуем</div>
+          <div class="service-name">Whisper Summary AI</div>
+          <div class="service-handle">
+            <a href="https://t.me/WhisperSummaryAI_bot?start=ref_7558032207" target="_blank" style="color: var(--ink); font-family: var(--font-mono); font-size: 12px; text-decoration: none; border-bottom: 1px solid var(--accent);">@WhisperSummaryAI_bot →</a>
+          </div>
+          <ul class="service-pros">
+            <li>Пересылаете голосовую — получаете текст за секунды</li>
+            <li>Отлично распознаёт разговорную речь, паузы, оговорки</li>
+            <li>Расставляет знаки препинания и разбивает на абзацы</li>
+            <li>Есть функция краткого резюме — удобно для длинных записей</li>
+            <li>Работает с нестабильным интернетом — запись без сети, отправка когда появится связь</li>
+          </ul>
+          <div class="service-trial">
+            <span class="trial-badge">🎁 Бесплатная неделя</span>
+            По ссылке выше — <strong>7 дней бесплатного доступа</strong>. Далее платная подписка.
+          </div>
+        </div>
+      </div>
+
+      <div class="service">
+        <div class="service-icon">🅱️</div>
+        <div>
+          <div class="service-name">Буквица</div>
+          <div class="service-handle">
+            <a href="https://t.me/bykvitsa?start=7558032207" target="_blank" style="color: var(--ink); font-family: var(--font-mono); font-size: 12px; text-decoration: none; border-bottom: 1px solid var(--accent);">@bykvitsa →</a>
+          </div>
+          <ul class="service-pros">
+            <li>Транскрибирует голосовые и аудиофайлы любой длины</li>
+            <li>Хорошо справляется с длинными записями — лекции, интервью</li>
+            <li>Форматирует текст абзацами, расставляет пунктуацию</li>
+          </ul>
+          <div class="service-trial">
+            <span class="trial-badge">🎁 Есть бесплатный лимит</span>
+            Попробуйте по ссылке выше. Далее — платная подписка.
+          </div>
+        </div>
+      </div>
+
+      <div class="service">
+        <div class="service-icon">⭐</div>
+        <div>
+          <div class="service-name">Telegram Premium</div>
+          <div class="service-handle" style="font-family: var(--font-mono); font-size: 12px; color: var(--ink-3);">Встроенная функция</div>
+          <ul class="service-pros">
+            <li>Транскрибация прямо в чате — нажали на голосовую, текст появился под ней</li>
+            <li>Работает без дополнительных ботов</li>
+            <li>Удобно для расшифровки сообщений от других людей</li>
+          </ul>
+          <div class="service-con">Только на подписке Telegram Premium (~300 ₽/мес). Знаки препинания расставляет хуже, чем специализированные боты.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="key-point">
+      <div class="key-label">Лайфхак</div>
+      <p>Записывайте голосовую в стандартный диктофон телефона без интернета — хоть в метро, хоть в лесу. Когда появится связь — пересылаете боту. Идея не потеряется.</p>
+    </div>
+
+    <div class="lesson-ref">
+      <div class="lesson-ref-icon">📖</div>
+      <div>
+        <div class="lesson-ref-label">Следующие уроки</div>
+        <p>О том, как дальше работать с расшифрованным текстом в ChatGPT — какие промты писать, как структурировать контент и собирать план на неделю — подробнее в <strong>Уроке 2</strong>. А как настроить персонального ассистента, который будет помнить весь ваш контекст без повторных объяснений — в <strong>Уроке 3</strong>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- КАК ГОВОРИТЬ -->
+  <section class="section" id="s-howtospeak">
+    <div class="section-label">Как записывать</div>
+    <h2>Что и как говорить в диктофон</h2>
+    <p style="color: var(--ink-2); margin-bottom: 16px;">Не нужно говорить «красиво» — ChatGPT потом причешет. Но несколько вещей помогут получить лучший результат.</p>
+
+    <div class="card">
+      <div class="card-eyebrow">Структура голосовой заметки</div>
+      <ol class="steps">
+        <li>
+          <div>
+            <div class="step-title">Назовите тему</div>
+            <div class="step-desc">Первые слова — о чём идея. «Хочу рассказать про то, как я начала тренироваться с коляской...»</div>
+            <span class="step-tag tag-phone">Говорите</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Расскажите суть — как подруге</div>
+            <div class="step-desc">Без структуры, без красивостей. Просто мысли вслух. Оговорки, «эм», паузы — не страшно, бот их уберёт или ChatGPT исправит.</div>
+            <span class="step-tag tag-phone">Говорите</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Скажите, что хотите получить</div>
+            <div class="step-desc">В конце добавьте: «Из этого хочу сделать пост» или «Это для сторис» — потом легче сформулировать промт для ChatGPT.</div>
+            <span class="step-tag tag-phone">Говорите</span>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ПРОМТЫ ДЛЯ РАБОТЫ С РАСШИФРОВКОЙ -->
+  <section class="section" id="s-prompts1">
+    <div class="section-label">Промты</div>
+    <h2>Что спрашивать у ChatGPT после транскрибации</h2>
+    <p style="color: var(--ink-2); margin-bottom: 20px;">Скопировали текст расшифровки — и вставляете его в ChatGPT вместе с одним из промтов ниже.</p>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт A — очистить и структурировать</div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Первый шаг — всегда этот</span>
+          <button class="copy-btn" onclick="copyPrompt(this,'pa')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="pa">Вот расшифровка моей голосовой заметки. Убери слова-паразиты, повторы и оговорки. Сохрани мой смысл и мои слова — не переписывай, просто почисти. Вот текст:
+
+<span class="ph">[вставьте расшифровку]</span></div>
+        <div class="prompt-tip">💡 Этот шаг — обязательный. Сначала чистим, потом просим делать что-то конкретное.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт Б — сделать пост</div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">После очистки</span>
+          <button class="copy-btn" onclick="copyPrompt(this,'pb')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="pb">Теперь на основе этого текста напиши пост для <span class="ph">[Instagram / Telegram / ВКонтакте]</span>. Стиль: живой, от первого лица, без канцелярита и длинных тире. Аудитория: <span class="ph">[опишите своих подписчиков]</span>. Длина: <span class="ph">[короткий / средний / длинный]</span>.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт В — вытащить смыслы и идеи</div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Если наговорили много мыслей</span>
+          <button class="copy-btn" onclick="copyPrompt(this,'pv')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="pv">В этой расшифровке несколько разных мыслей. Выдели из них отдельные смыслы — каждый одним предложением. Это будет моя база идей для контента.
+
+<span class="ph">[вставьте расшифровку]</span></div>
+        <div class="prompt-tip">💡 Используйте этот промт, если наговорили 5–10 минут обо всём подряд. ChatGPT разберёт на отдельные темы.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт Г — сделать сценарий Reels</div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Из голосовой — в видео</span>
+          <button class="copy-btn" onclick="copyPrompt(this,'pg')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="pg">Сделай из этого текста разговорный сценарий для короткого видео. Начни с цепляющей фразы-крючка. Длина: 30–45 секунд при спокойном темпе речи. Стиль: как будто говорю с другом, без официоза.
+
+<span class="ph">[вставьте очищенный текст]</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- БАЗА ИДЕЙ -->
+  <section class="section" id="s-base">
+    <div class="section-label">Лайфхак</div>
+    <h2>Копилка смыслов: как не терять идеи</h2>
+    <p style="color: var(--ink-2); margin-bottom: 16px;">Мысли приходят — и уходят. Заведите одно место, куда складываете все расшифрованные идеи. Потом используете как базу для контент-плана.</p>
+
+    <div class="idea-base">
+      <div class="idea-cell">
+        <span class="idea-cell-icon">📋</span>
+        <div class="idea-cell-name">Заметки</div>
+        <div class="idea-cell-desc">Отдельная заметка «Идеи для контента» — просто копируете туда смыслы</div>
+      </div>
+      <div class="idea-cell">
+        <span class="idea-cell-icon">📊</span>
+        <div class="idea-cell-name">Google Таблица</div>
+        <div class="idea-cell-desc">Таблица: дата, идея, статус (готово / в работе / опубликовано)</div>
+      </div>
+      <div class="idea-cell">
+        <span class="idea-cell-icon">💬</span>
+        <div class="idea-cell-name">Чат с собой</div>
+        <div class="idea-cell-desc">Telegram → «Избранное» — пересылаете боту и сразу кидаете расшифровку себе</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт Д — разобрать базу идей в контент-план</div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Когда накопили 10+ идей</span>
+          <button class="copy-btn" onclick="copyPrompt(this,'pd')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="pd">Вот мои накопленные идеи для контента. Распредели их по дням на ближайшие 2 недели. Учти разнообразие форматов: посты, сторис, Reels. Оформи в таблицу: день, идея, формат.
+
+<span class="ph">[вставьте список идей]</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ЧАСТЬ 2 ===================== -->
+
+  <div class="divider">Часть 2 — Свой стиль в ChatGPT</div>
+
+  <section class="section" id="part2">
+    <div class="section-label">Часть 2 из 2</div>
+    <div class="section-part green">🎨 Tone of Voice</div>
+    <h2>Как научить ChatGPT писать вашим голосом</h2>
+
+    <p style="margin-bottom: 16px;">ChatGPT пишет правильно — но безлично. Подписчики чувствуют разницу между вашим текстом и «нейросетевым». Решение: <span class="hl-line">один раз описать свой стиль</span> и вшить его в помощника.</p>
+
+    <div class="key-point">
+      <div class="key-label">Суть</div>
+      <p>Дайте ChatGPT ваши старые тексты → попросите проанализировать стиль → вшейте описание в Custom GPT или сохраните как системный промт.</p>
+    </div>
+  </section>
+
+  <!-- ЧТО GPT НЕ ПОВТОРИТ САМ -->
+  <section class="section" id="s-tov-limits">
+    <div class="section-label">Ограничения</div>
+    <h2>Чего ChatGPT не умеет без вашей помощи</h2>
+
+    <div class="before-after">
+      <div class="ba-box before">
+        <span class="ba-label">ChatGPT сам по себе пишет</span>
+        <div class="ba-text">«Домашние тренировки — это отличный способ поддерживать физическую форму без посещения спортивного зала. Данный подход позволяет экономить время и средства...»</div>
+      </div>
+      <div class="ba-box after">
+        <span class="ba-label">Вы на самом деле пишете</span>
+        <div class="ba-text">«Ладно, признаюсь: первые две недели я делала "зарядку" лёжа 😅 Серьёзно. Просто лежала и думала что вот-вот встану. Но потом что-то щёлкнуло...»</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+      <div class="card-eyebrow">Что GPT никогда не угадает без подсказки</div>
+      <ol class="steps">
+        <li><div><div class="step-title">Ваш сленг и любимые словечки</div><div class="step-desc">«Ладно», «слушайте», «ну вот», «честно говоря» — то, как вы реально разговариваете.</div></div></li>
+        <li><div><div class="step-title">Ритм и длина предложений</div><div class="step-desc">Кто-то пишет длинно и плавно, кто-то — короткими ударами. Это ваш почерк.</div></div></li>
+        <li><div><div class="step-title">Эмодзи и пунктуация</div><div class="step-desc">Ставите ли вы многоточия. Любите ли скобки (вот так). Или вообще без смайлов.</div></div></li>
+        <li><div><div class="step-title">Как вы обращаетесь к читателю</div><div class="step-desc">«Друзья», «девочки», «ребята», «слушайте» — у каждого блогера своё.</div></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ШАГ 1 — АНАЛИЗ СТИЛЯ -->
+  <section class="section" id="s-tov-analyze">
+    <div class="section-label">Шаг 1</div>
+    <h2>Анализируем ваш стиль: что скормить ChatGPT</h2>
+
+    <p style="margin-bottom: 16px;">ChatGPT учится вашему стилю на примерах. Чем больше и разнообразнее материал — тем точнее результат. Хорошая новость: подойдёт не только текст постов, но и расшифровки голосовых.</p>
+
+    <div class="card">
+      <div class="card-eyebrow">Что можно использовать как обучающий материал</div>
+      <ol class="steps">
+        <li>
+          <div>
+            <div class="step-title">Ваши лучшие посты (5–10 штук)</div>
+            <div class="step-desc">Те, которые хорошо зашли и звучат именно как вы — не те, где старались «писать правильно».</div>
+            <span class="step-tag tag-post">Текст</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Расшифровки ваших голосовых заметок</div>
+            <div class="step-desc">Это особенно ценно: голосовые передают живую речь — ваши любимые словечки, ритм, паузы, обращения. То, как вы <em>говорите</em> — и есть ваш настоящий стиль. Расшифруйте 3–5 голосовых через бот и добавьте к постам.</div>
+            <span class="step-tag tag-bot">Расшифровка</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Тексты сторис или сообщения в личке</div>
+            <div class="step-desc">Как вы отвечаете подписчикам — тоже часть вашего голоса. Если есть скрины переписок — смело добавляйте.</div>
+            <span class="step-tag tag-you">Любой формат</span>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт Е — анализ стиля</div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Главный промт для tone of voice</span>
+          <button class="copy-btn" onclick="copyPrompt(this,'pe')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="pe">Проанализируй мои тексты и расшифровки голосовых ниже — и опиши мой стиль письма и речи. Мне нужно:
+1. Какой у меня тон (тёплый / прямой / иронический / дружеский / другой)
+2. Типичная длина постов и предложений
+3. Любимые слова, обращения, фразы-маркеры
+4. Как я использую эмодзи и знаки препинания
+5. Что делает мои тексты узнаваемыми — чтобы ты мог воспроизвести это
+
+Мои материалы:
+
+<span class="ph">[вставьте посты и/или расшифровки голосовых подряд]</span></div>
+        <div class="prompt-tip">💡 Сохраните ответ ChatGPT — это и есть ваш tone of voice. Он пойдёт в Custom GPT или в системный промт.</div>
+      </div>
+    </div>
+
+    <div class="key-point">
+      <div class="key-label">Важно</div>
+      <p>Расшифровки голосовых часто точнее передают ваш стиль, чем написанные посты — потому что в них вы не «редактировали» себя. Попробуйте дать только расшифровки и посмотрите, что получится.</p>
+    </div>
+
+    <div class="lesson-ref">
+      <div class="lesson-ref-icon">📖</div>
+      <div>
+        <div class="lesson-ref-label">Из следующих уроков</div>
+        <p>Как вшить описание стиля в персонального GPT-ассистента, который будет всегда писать в вашем тоне без напоминаний — подробно разбирается в <strong>Уроке 3</strong>. Там же — как настроить Custom GPT под разные задачи: посты, продажи, сторис.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ШАГ 2 — ВШИТЬ В GPT -->
+  <section class="section" id="s-tov-inject">
+    <div class="section-label">Шаг 2</div>
+    <h2>Вшиваем стиль в ChatGPT навсегда</h2>
+    <p style="color: var(--ink-2); margin-bottom: 20px;">Есть два способа — выбирайте по тому, какой тариф у вас есть.</p>
+
+    <div class="card">
+      <div class="card-eyebrow">Способ А — через Custom GPT (нужен Plus)</div>
+      <ol class="steps">
+        <li><div><div class="step-title">Откройте своего ассистента из Урока 3</div><div class="step-desc">Explore → ваш Custom GPT → «Edit» / «Редактировать».</div></div></li>
+        <li><div><div class="step-title">В поле «Инструкции» добавьте описание стиля</div><div class="step-desc">Вставьте ответ ChatGPT из промта «Анализ стиля» в начало инструкций — перед всем остальным.</div></div></li>
+        <li><div><div class="step-title">Сохраните и протестируйте</div><div class="step-desc">Попросите написать пост на любую тему — сравните с вашими текстами. Звучит похоже?</div></div></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Способ Б — системный промт в начале каждого чата (Free)</div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Вставляйте в начало нового чата</span>
+          <button class="copy-btn" onclick="copyPrompt(this,'pf')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="pf">Перед тем как мы начнём работу, запомни мой стиль письма:
+
+<span class="ph">[вставьте сюда описание стиля, которое дал ChatGPT]</span>
+
+Всегда пиши в этом стиле, когда я прошу создать контент. Не пиши официально, не используй канцелярит и длинные тире.</div>
+        <div class="prompt-tip">💡 Сохраните этот промт в заметки — копируйте в начало каждого нового чата про контент.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ШАГ 3 — ДОНАСТРОЙКА -->
+  <section class="section" id="s-tov-tune">
+    <div class="section-label">Шаг 3</div>
+    <h2>Донастройка: учим GPT вашим словечкам</h2>
+    <p style="color: var(--ink-2); margin-bottom: 16px;">Анализ стиля даёт общую картину. Но ваши личные маркеры — нужно добавить вручную.</p>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт Ж — добавить личные маркеры стиля</div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">После анализа — уточняем детали</span>
+          <button class="copy-btn" onclick="copyPrompt(this,'pzh')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="pzh">Дополни описание моего стиля. Я хочу, чтобы ты учитывал:
+- Я обращаюсь к читателям: <span class="ph">[«девочки» / «ребята» / «друзья» / ваш вариант]</span>
+- Я часто использую слова: <span class="ph">[напишите 5–7 своих любимых слов]</span>
+- Я <span class="ph">[ставлю / не ставлю]</span> эмодзи, обычно вот такие: <span class="ph">[вставьте примеры]</span>
+- Мои предложения обычно <span class="ph">[короткие и прямые / длинные и плавные]</span>
+- Я никогда не пишу: <span class="ph">[слова и обороты которых вы избегаете]</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <div class="card-eyebrow">Промт З — проверка стиля</div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Когда хотите убедиться, что GPT «понял» вас</span>
+          <button class="copy-btn" onclick="copyPrompt(this,'pz')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="pz">Напиши короткий пост (3–4 предложения) про <span class="ph">[любая тема]</span> в моём стиле. Я сравню с моими текстами и скажу, что подправить.</div>
+        <div class="prompt-tip">💡 Если что-то не так — скажите GPT: «Звучит слишком официально», «Убери пафос», «Добавь больше живых слов» — и он подстроится.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЗАМЕТКА ПРО КОНТРОЛЬ -->
+  <section class="section" id="s-tov-control">
+    <div class="section-label">Контроль качества</div>
+    <h2>Как держать стиль под контролем</h2>
+
+    <div class="card">
+      <div class="card-eyebrow">Три вещи, которые всегда проверяйте перед публикацией</div>
+      <ol class="steps">
+        <li>
+          <div>
+            <div class="step-title">Прочитайте вслух</div>
+            <div class="step-desc">Если спотыкаетесь — значит, так вы не говорите. Перепишите то место своими словами.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Найдите длинные тире и уберите</div>
+            <div class="step-desc">Замените на точку, запятую или короткий дефис. Длинное тире — главный маркер нейросети.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Добавьте одну личную деталь</div>
+            <div class="step-desc">Конкретный момент, имя, место, ощущение — то, что знаете только вы. Это делает текст живым.</div>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ПРАКТИКА -->
+  <section class="section" id="s-practice">
+    <div class="section-label">Практика</div>
+    <h2>Задание к гайду</h2>
+
+    <div class="card">
+      <div class="card-eyebrow">Часть 1 — голосовые</div>
+      <ol class="steps">
+        <li><div><div class="step-title">Подключите @WhisperSummaryAI_bot</div><div class="step-desc">Найдите в Telegram, нажмите Start.</div></div></li>
+        <li><div><div class="step-title">Запишите голосовую на 1–2 минуты</div><div class="step-desc">Любая идея для контента — говорите как думаете, не редактируйте.</div></div></li>
+        <li><div><div class="step-title">Отправьте боту и скопируйте расшифровку</div></div></li>
+        <li><div><div class="step-title">Используйте промты А и Б — получите пост</div><div class="step-desc">Добавьте 30% своего — опубликуйте или сохраните.</div></div></li>
+      </ol>
+    </div>
+
+    <div class="card" style="margin-top: 12px;">
+      <div class="card-eyebrow">Часть 2 — стиль</div>
+      <ol class="steps">
+        <li><div><div class="step-title">Соберите 5–10 своих лучших постов</div></div></li>
+        <li><div><div class="step-title">Запустите промт Е — получите описание стиля</div></div></li>
+        <li><div><div class="step-title">Вшейте описание в Custom GPT или сохраните как системный промт</div></div></li>
+        <li><div><div class="step-title">Попросите написать тестовый пост — сравните с вашими текстами</div></div></li>
+      </ol>
+    </div>
+
+    <div class="divider">Чеклист</div>
+
+    <ul class="checklist" id="checklist">
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div><div class="task-title">Подключила @WhisperSummaryAI_bot</div><div class="task-meta">Часть 1 · Шаг 1</div></div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div><div class="task-title">Записала и расшифровала первую голосовую</div><div class="task-meta">Часть 1 · Шаг 2–3</div></div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div><div class="task-title">Получила готовый пост из голосовой</div><div class="task-meta">Часть 1 · Промты А+Б</div></div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div><div class="task-title">Скормила свои тексты и/или расшифровки голосовых ChatGPT — получила описание стиля</div><div class="task-meta">Часть 2 · Промт Е</div></div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div><div class="task-title">Вшила стиль в ассистента или сохранила как системный промт</div><div class="task-meta">Часть 2 · Шаг 2</div></div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div><div class="task-title">Проверила тестовый пост — звучит как я</div><div class="task-meta">Часть 2 · Промт З</div></div>
+      </li>
+    </ul>
+
+    <div class="progress-wrap" style="margin-top: 16px;">
+      <div class="progress-label">
+        <span>Прогресс гайда</span>
+        <span id="progressText">0 / 6</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-done" id="checkProgress" style="width: 0%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЗАМЕТКИ -->
+  <section class="section" id="s-notes">
+    <div class="section-label">Заметки</div>
+    <h2>Мой tone of voice</h2>
+    <div class="note-field">
+      <div class="note-label">Описание моего стиля (скопируйте сюда ответ ChatGPT)</div>
+      <textarea class="note-textarea" rows="5" placeholder="Вставьте сюда описание стиля, которое выдал ChatGPT после анализа ваших текстов..."></textarea>
+    </div>
+    <div class="note-field" style="margin-top: 12px;">
+      <div class="note-label">Мои слова и фразы, которые я хочу сохранить</div>
+      <textarea class="note-textarea" rows="3" placeholder="Слова-маркеры, обращения, любимые фразы..."></textarea>
+    </div>
+  </section>
+
+  <!-- ИТОГ -->
+  <div class="callout-dark" id="callout">
+    <h3>Итог гайда</h3>
+    <p>Теперь у вас есть полный рабочий процесс: наговорили идею на ходу → расшифровали → получили пост через ChatGPT. А ваш ассистент знает ваш стиль и пишет так, что подписчики не замечают разницы. Это не магия — это система, которую вы настроили один раз и используете каждый день.</p>
+  </div>
+
+  <div class="btn-row">
+    <a href="m4-lesson3-custom-gpt.html" class="btn btn-ghost">← Урок 3</a>
+    <button class="btn btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Наверх</button>
+  </div>
+
+</div>
+
+<script>
+window.addEventListener('scroll', () => {
+  const el = document.getElementById('progressFill');
+  const total = document.body.scrollHeight - window.innerHeight;
+  el.style.width = (window.scrollY / total * 100) + '%';
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.section, .callout-dark').forEach(s => observer.observe(s));
+
+function toggleCheck(li) {
+  li.classList.toggle('done');
+  const items = document.querySelectorAll('#checklist li');
+  const done = document.querySelectorAll('#checklist li.done').length;
+  document.getElementById('progressText').textContent = done + ' / ' + items.length;
+  document.getElementById('checkProgress').style.width = (done / items.length * 100) + '%';
+}
+
+function copyPrompt(btn, id) {
+  const el = document.getElementById(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Скопировано ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Скопировать'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
