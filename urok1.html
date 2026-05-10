@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Модуль 4 · Урок 1 — Знакомство с ChatGPT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --bg-soft: #F5F6F7;
+  --bg-muted: #EDEEF0;
+  --ink: #1A1A1A;
+  --ink-2: #4A4D52;
+  --ink-3: #8A8E94;
+  --line: #E4E6E9;
+  --accent: #C4F542;
+  --accent-strong: #B8E83D;
+  --accent-ink: #0F1A00;
+  --font-display: 'Unbounded', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ——— ПРОГРЕСС ——— */
+.progress-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 3px; background: var(--line);
+}
+.progress-fill {
+  height: 100%; background: var(--accent);
+  width: 0%; transition: width 0.2s;
+}
+
+/* ——— NAV ——— */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.nav-title {
+  font-family: var(--font-display); font-weight: 600; font-size: 13px;
+  color: var(--ink);
+}
+.nav-time {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--ink-3);
+}
+.nav-time-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* ——— WRAP ——— */
+.wrap { max-width: 760px; margin: 0 auto; padding: 64px 32px 120px; }
+
+/* ——— ШАПКА ——— */
+.hero { margin-bottom: 64px; }
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 24px; height: 1px; background: var(--ink-3);
+}
+.hero-title {
+  display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start;
+  margin-bottom: 24px;
+}
+.stamp {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 14px;
+  background: var(--accent); color: var(--accent-ink);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-top: 8px; white-space: nowrap;
+}
+.title-text {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(28px, 4vw, 40px); line-height: 1.1; letter-spacing: -0.02em;
+}
+.hero-lead {
+  font-size: 18px; font-weight: 500; line-height: 1.6; color: var(--ink-2);
+  max-width: 620px;
+}
+.chips {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  background: var(--bg-soft); border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: 12px; font-weight: 500; color: var(--ink-2);
+  font-family: var(--font-mono);
+}
+
+/* ——— СЕКЦИИ ——— */
+.section {
+  margin-bottom: 56px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.section.visible { opacity: 1; transform: translateY(0); }
+.section-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px;
+}
+.section h2 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: 22px; letter-spacing: -0.01em; margin-bottom: 20px;
+}
+
+/* ——— KEY POINT ——— */
+.key-point {
+  display: flex; gap: 16px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  border-left: 3px solid var(--accent);
+  margin: 20px 0;
+}
+.key-label {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3);
+  white-space: nowrap; padding-top: 3px;
+}
+.key-point p { font-weight: 500; margin: 0; }
+
+/* ——— КАРТОЧКА ——— */
+.card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  margin: 16px 0;
+}
+.card-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px;
+}
+
+/* ——— STEPS ——— */
+.steps { counter-reset: step; list-style: none; padding: 0; display: grid; gap: 0; }
+.steps li {
+  counter-increment: step;
+  display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: start;
+  padding: 16px 0; border-bottom: 1px solid var(--line);
+}
+.steps li:last-child { border-bottom: none; }
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  color: var(--ink-3); padding-top: 3px;
+}
+.step-title { font-weight: 600; margin-bottom: 4px; }
+.step-desc { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+
+/* ——— СРАВНЕНИЕ ПРОМТОВ ——— */
+.prompt-compare {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin: 16px 0;
+}
+.prompt-box {
+  border-radius: var(--radius-md); padding: 20px;
+  position: relative;
+}
+.prompt-box.bad {
+  background: #FFF5F5; border: 1px solid #FECACA;
+}
+.prompt-box.good {
+  background: #F0FDF0; border: 1px solid var(--accent);
+}
+.prompt-tag {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 10px; display: block;
+}
+.prompt-box.bad .prompt-tag { color: #DC2626; }
+.prompt-box.good .prompt-tag { color: #16A34A; }
+.prompt-text {
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.6;
+  color: var(--ink);
+  background: rgba(255,255,255,0.6); border-radius: 8px;
+  padding: 12px; border: 1px dashed rgba(0,0,0,0.1);
+}
+
+/* ——— ФОРМУЛА ——— */
+.formula {
+  display: flex; align-items: center; gap: 0; flex-wrap: wrap;
+  background: var(--bg-soft); border-radius: var(--radius-md);
+  padding: 20px 24px; margin: 16px 0; gap: 8px;
+}
+.formula-part {
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); padding: 10px 16px;
+  font-weight: 600; font-size: 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.formula-part span {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase;
+}
+.formula-plus {
+  font-family: var(--font-display); font-size: 20px; font-weight: 600;
+  color: var(--ink-3);
+}
+.formula-eq {
+  font-family: var(--font-display); font-size: 16px; font-weight: 600;
+  color: var(--ink-3);
+}
+.formula-result {
+  background: var(--accent); color: var(--accent-ink);
+  border-radius: var(--radius-sm); padding: 10px 16px;
+  font-weight: 700; font-size: 14px;
+}
+
+/* ——— ПРАВИЛО 70/30 ——— */
+.rule-bar {
+  height: 48px; border-radius: var(--radius-pill);
+  background: var(--bg-soft); border: 1px solid var(--line);
+  overflow: hidden; display: flex; margin: 16px 0;
+}
+.rule-ai {
+  background: var(--ink); display: flex; align-items: center;
+  padding: 0 20px; color: #fff; font-weight: 600; font-size: 13px;
+  font-family: var(--font-mono); letter-spacing: 0.04em;
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  width: 0%;
+}
+.rule-you {
+  background: var(--accent); display: flex; align-items: center;
+  padding: 0 20px; color: var(--accent-ink); font-weight: 600; font-size: 13px;
+  font-family: var(--font-mono); letter-spacing: 0.04em;
+  flex: 1;
+}
+.rule-bar.animated .rule-ai { width: 70%; }
+
+/* ——— ТАРИФЫ ——— */
+.tariffs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0; }
+.tariff {
+  border: 1px solid var(--line); border-radius: var(--radius-md); padding: 20px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.tariff:hover { border-color: var(--ink-3); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.tariff-name {
+  font-family: var(--font-display); font-weight: 600; font-size: 16px;
+  margin-bottom: 4px;
+}
+.tariff-price {
+  font-family: var(--font-mono); font-size: 12px; color: var(--ink-3);
+  margin-bottom: 12px;
+}
+.tariff-features { list-style: none; display: grid; gap: 6px; }
+.tariff-features li {
+  font-size: 13px; color: var(--ink-2); display: flex; align-items: start; gap: 8px;
+}
+.tariff-features li::before {
+  content: '·'; color: var(--accent); font-weight: 700; flex-shrink: 0;
+  margin-top: 1px;
+}
+.tariff.recommended { border-color: var(--accent); background: #FAFFF0; }
+.tariff-badge {
+  display: inline-block;
+  background: var(--accent); color: var(--accent-ink);
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px; margin-bottom: 8px;
+}
+
+/* ——— ЧЕКЛИСТ ——— */
+.checklist { list-style: none; padding: 0; display: grid; gap: 10px; }
+.checklist li {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 18px;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  cursor: pointer; transition: border-color 0.2s, background 0.2s;
+  user-select: none;
+}
+.checklist li:hover { border-color: var(--ink-3); }
+.checklist li.done { background: #FAFFF0; border-color: var(--accent); }
+.check-box {
+  flex: 0 0 22px; width: 22px; height: 22px; border-radius: 7px;
+  border: 1.5px solid var(--line); margin-top: 2px;
+  transition: all 0.2s; position: relative; background: var(--bg);
+}
+.checklist li.done .check-box {
+  background: var(--accent); border-color: var(--accent);
+}
+.checklist li.done .check-box::after {
+  content: '';
+  position: absolute; left: 6px; top: 2px;
+  width: 6px; height: 11px;
+  border-right: 2px solid var(--accent-ink);
+  border-bottom: 2px solid var(--accent-ink);
+  transform: rotate(45deg);
+}
+.task-title { font-weight: 600; font-size: 15px; }
+.task-meta { font-size: 12px; color: var(--ink-3); margin-top: 3px; font-family: var(--font-mono); }
+
+/* ——— NOTE FIELD ——— */
+.note-field {
+  background: var(--bg-soft); border: 1px dashed #C4C7CC;
+  border-radius: var(--radius-md); padding: 20px; margin: 16px 0;
+}
+.note-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+}
+.note-textarea {
+  width: 100%; border: none; background: transparent; resize: none;
+  font-family: var(--font-body); font-size: 15px; color: var(--ink);
+  line-height: 1.8; outline: none;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 28px, var(--line) 28px, var(--line) 29px
+  );
+  min-height: 120px;
+}
+.note-textarea::placeholder { color: var(--ink-3); }
+
+/* ——— CALLOUT ——— */
+.callout-dark {
+  background: var(--ink); color: #fff;
+  border-radius: var(--radius-lg); padding: 28px 32px; margin: 24px 0;
+}
+.callout-dark h3 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: 20px; margin-bottom: 10px;
+}
+.callout-dark p { color: #CFD1D4; font-size: 15px; }
+
+/* ——— DIVIDER ——— */
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  margin: 28px 0; color: var(--ink-3);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--line);
+}
+
+/* ——— КНОПКИ ——— */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-weight: 600; font-size: 15px;
+  padding: 14px 24px; border-radius: var(--radius-pill);
+  border: none; cursor: pointer; transition: all 0.15s; text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: var(--accent-strong); }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn-ghost:hover { background: var(--bg-muted); }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+
+/* ——— HIGHLIGHT ——— */
+.hl {
+  background: var(--accent); color: var(--accent-ink);
+  padding: 2px 8px; border-radius: 6px; font-weight: 600;
+}
+.hl-line {
+  background-image: linear-gradient(transparent 55%, var(--accent) 55%, var(--accent) 92%, transparent 92%);
+  padding: 0 2px; font-weight: 600;
+}
+
+/* ——— ИТОГ / ПРОГРЕСС ——— */
+.progress-wrap {
+  background: var(--bg-soft); border-radius: var(--radius-lg);
+  padding: 24px 28px; margin: 24px 0;
+}
+.progress-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px;
+  display: flex; justify-content: space-between;
+}
+.progress-track {
+  height: 8px; background: var(--line); border-radius: 99px; overflow: hidden;
+}
+.progress-done {
+  height: 100%; background: var(--accent); border-radius: 99px;
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ——— КОНТЕКСТ УРОКА ——— */
+.context-note {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: #FFFBEB; border: 1px solid #FCD34D;
+  border-radius: var(--radius-md); padding: 20px 24px;
+  margin-bottom: 48px;
+}
+.context-note-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.context-note-title {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #92400E; margin-bottom: 6px;
+}
+.context-note p { font-size: 14px; color: #78350F; line-height: 1.6; margin: 0; }
+.context-note strong { color: #451A03; }
+
+@media (max-width: 640px) {
+  .nav { padding: 12px 20px; }
+  .nav-title { display: none; }
+  .wrap { padding: 40px 20px 80px; }
+  .prompt-compare { grid-template-columns: 1fr; }
+  .tariffs { grid-template-columns: 1fr; }
+  .formula { flex-direction: column; align-items: flex-start; }
+  .hero-title { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="nav">
+  <div class="nav-brand">FitStars · Модуль 4</div>
+  <div class="nav-title">Знакомство с ChatGPT</div>
+  <div class="nav-time">
+    <div class="nav-time-dot"></div>
+    ~15 мин чтения
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-eyebrow">Модуль 4 · Урок 1</div>
+    <div class="hero-title">
+      <span class="stamp">Урок 1</span>
+      <span class="title-text">Знакомство с ChatGPT: первые шаги и правильные запросы</span>
+    </div>
+    <p class="hero-lead">Разбираемся, что такое нейросеть, регистрируемся, изучаем интерфейс и учимся ставить задачи так, чтобы получать результат — не абстрактный текст.</p>
+    <div class="chips">
+      <span class="chip">15 мин</span>
+      <span class="chip">Практика</span>
+      <span class="chip">Все тарифы</span>
+      <span class="chip">Русский язык</span>
+    </div>
+  </header>
+
+  <!-- КОНТЕКСТ УРОКА -->
+  <div class="context-note">
+    <div class="context-note-icon">📌</div>
+    <div>
+      <div class="context-note-title">Контекст урока</div>
+      <p>В видео автор разбирает примеры для амбассадоров FitStars — это их партнёрская программа. Всё, что здесь показано, работает для <strong>любого блогера</strong> в любой нише. Просто замените «FitStars» на вашу тему, продукт или услугу. А когда вы вступите в ряды амбассадоров — у вас уже будет готовая база, и останется только подставить нужный контекст.</p>
+    </div>
+  </div>
+
+  <!-- 1. ЧТО ТАКОЕ CHATGPT -->
+  <section class="section" id="s1">
+    <div class="section-label">01 — Суть</div>
+    <h2>Что такое ChatGPT</h2>
+
+    <p style="margin-bottom: 16px;">ChatGPT — это <span class="hl-line">хранилище всех знаний интернета</span>, упакованное в форму собеседника. Программа обучилась на огромном массиве текстов и теперь умеет логически рассуждать, писать как копирайтер и строить смысловые гипотезы.</p>
+
+    <div class="key-point">
+      <div class="key-label">Главное</div>
+      <p>ChatGPT — не сложная программа, а текстовая модель. Вы пишете ей обычный русский текст — она отвечает. Код знать не нужно.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Зачем это блогеру?</div>
+      <ol class="steps">
+        <li>
+          <div>
+            <div class="step-title">Скорость контента</div>
+            <div class="step-desc">За время одного поста вручную можно создать несколько единиц контента для разных площадок.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Идеи без блока</div>
+            <div class="step-desc">Попросили — получили 10 тем. Нет вдохновения? Нейросеть не устаёт.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Персонализация под аудиторию</div>
+            <div class="step-desc">Один и тот же запрос — разные ответы для мам в декрете, студентов или новичков в спорте.</div>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 2. РЕГИСТРАЦИЯ -->
+  <section class="section" id="s2">
+    <div class="section-label">02 — Регистрация</div>
+    <h2>Как зарегистрироваться</h2>
+
+    <div class="key-point">
+      <div class="key-label">Важно</div>
+      <p>В России нужен VPN — быстрый, иначе сервис не откроется. Переходите только по официальной ссылке: сейчас много сервисов-посредников.</p>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <div>
+          <div class="step-title">Откройте chatgpt.com с включённым VPN</div>
+          <div class="step-desc">Нажмите чёрную кнопку «Войти» на стартовой странице.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Самый простой способ — через Google-аккаунт</div>
+          <div class="step-desc">Все иностранные нейросети поддерживают вход через Gmail. Если забыли пароль — восстановите сейчас.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Альтернативы: Apple ID или email</div>
+          <div class="step-desc">Для email используйте международную почту — Mail.ru и Яндекс не принимаются.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Готово — вы на тарифе Free</div>
+          <div class="step-desc">Можно сразу начать работу. Ниже разберём тарифы подробнее.</div>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 3. ТАРИФЫ -->
+  <section class="section" id="s3">
+    <div class="section-label">03 — Тарифы</div>
+    <h2>Тарифная сетка ChatGPT</h2>
+    <p style="color: var(--ink-2); margin-bottom: 20px;">Все функции, которые разбираются в этом уроке, работают на тарифе Free.</p>
+
+    <div class="tariffs">
+      <div class="tariff">
+        <div class="tariff-name">Free</div>
+        <div class="tariff-price">Бесплатно</div>
+        <ul class="tariff-features">
+          <li>Базовые модели GPT</li>
+          <li>Ограничение сообщений в день</li>
+          <li>Создание проектов и чатов</li>
+          <li>Без Custom GPT-агентов</li>
+        </ul>
+      </div>
+      <div class="tariff recommended">
+        <div class="tariff-badge">Для старта</div>
+        <div class="tariff-name">Go</div>
+        <div class="tariff-price">~4 € / мес</div>
+        <ul class="tariff-features">
+          <li>Больше сообщений и загрузок</li>
+          <li>Генерация изображений</li>
+          <li>Расширенный голосовой режим</li>
+          <li>Более долгая память</li>
+        </ul>
+      </div>
+      <div class="tariff">
+        <div class="tariff-name">Plus</div>
+        <div class="tariff-price">~20 $ / мес</div>
+        <ul class="tariff-features">
+          <li>Всё из Go</li>
+          <li>Создание Custom GPT</li>
+          <li>Приоритетный доступ к моделям</li>
+          <li>Команды / ассистенты</li>
+        </ul>
+      </div>
+      <div class="tariff">
+        <div class="tariff-name">Pro</div>
+        <div class="tariff-price">Профессиональный</div>
+        <ul class="tariff-features">
+          <li>Все возможности Plus</li>
+          <li>Написание кода</li>
+          <li>Максимальные лимиты</li>
+          <li>Для разработчиков</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="key-point">
+      <div class="key-label">Оплата</div>
+      <p>Российской картой оплатить нельзя — нужна международная карта или сервис-посредник.</p>
+    </div>
+  </section>
+
+  <!-- 4. ИНТЕРФЕЙС -->
+  <section class="section" id="s4">
+    <div class="section-label">04 — Интерфейс</div>
+    <h2>Как устроен ChatGPT изнутри</h2>
+
+    <ol class="steps">
+      <li>
+        <div>
+          <div class="step-title">Поле ввода — центр вашей работы</div>
+          <div class="step-desc">Главный белый экран. Сюда вы пишете запрос — нейросеть создаёт чат.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Чат — один проект, один диалог</div>
+          <div class="step-desc">Не создавайте новый чат на каждый запрос: нейросеть потеряет контекст. Ведите весь проект в одном чате.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Проекты — папки для разных задач</div>
+          <div class="step-desc">Создайте проект под ваш блог — например, «Мой блог» или «[Ваша ниша] контент» — и внутри него отдельные чаты: «Посты», «Сторис», «Продажи». Чаты внутри проекта делятся контекстом.</div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="card" style="border-color: var(--accent);">
+      <div class="card-eyebrow">Совет</div>
+      <p>Создайте проект прямо сейчас — левая панель → «Новый проект» → дайте ему название своего блога или ниши. Внутри создайте первый чат и напишите туда «Привет».</p>
+    </div>
+  </section>
+
+  <!-- 5. ФОРМУЛА ПРОМТА -->
+  <section class="section" id="s5">
+    <div class="section-label">05 — Формула</div>
+    <h2>Формула правильного промта</h2>
+
+    <p style="margin-bottom: 20px;">Нейросеть не угадывает контекст. Чем меньше деталей — тем абстрактнее ответ. Работает простая формула из трёх элементов:</p>
+
+    <div class="formula">
+      <div class="formula-part">
+        Для кого
+        <span>Аудитория</span>
+      </div>
+      <div class="formula-plus">+</div>
+      <div class="formula-part">
+        Что сделать
+        <span>Задача</span>
+      </div>
+      <div class="formula-plus">+</div>
+      <div class="formula-part">
+        Как именно
+        <span>Формат / тон</span>
+      </div>
+      <div class="formula-eq">=</div>
+      <div class="formula-result">Точный результат</div>
+    </div>
+
+    <div class="divider">Сравните два запроса</div>
+
+    <div class="prompt-compare">
+      <div class="prompt-box bad">
+        <span class="prompt-tag">✗ Плохо</span>
+        <div class="prompt-text">Напиши мне пост про домашние тренировки</div>
+        <p style="font-size: 12px; color: #DC2626; margin-top: 10px;">Результат: обезличенный «GPT-текст», который сразу виден подписчикам</p>
+      </div>
+      <div class="prompt-box good">
+        <span class="prompt-tag">✓ Хорошо</span>
+        <div class="prompt-text">Напиши пост для Instagram про пользу утренних тренировок. Аудитория: мамы в декрете, 30–40 лет. Формат: 3 абзаца, эмоционально, с призывом попробовать домашние тренировки</div>
+        <p style="font-size: 12px; color: #16A34A; margin-top: 10px;">Результат: персонализированный текст, который говорит на языке аудитории</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. ПРАВИЛО 70/30 -->
+  <section class="section" id="s6">
+    <div class="section-label">06 — Правило</div>
+    <h2>Правило 70/30: ваш голос — обязательно</h2>
+
+    <p style="margin-bottom: 16px;">Подписчики чувствуют, когда текст написан ИИ. Нейросеть даёт <span class="hl-line">крепкий скелет</span> — вы наращиваете его живым голосом.</p>
+
+    <div class="rule-bar" id="ruleBar">
+      <div class="rule-ai" id="ruleAi">70% — ChatGPT</div>
+      <div class="rule-you">30% — Вы</div>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <div>
+          <div class="step-title">70% — скелет от ChatGPT</div>
+          <div class="step-desc">Структура, идеи, аргументы, формулировки — берёте из ответа нейросети.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">30% — ваши детали</div>
+          <div class="step-desc">Личная история, живые слова, смайлики, детали из вашей жизни — то, что звучит именно вашим голосом.</div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="key-point">
+      <div class="key-label">Главная ошибка</div>
+      <p>Ctrl+C → Ctrl+V. Не делайте так. Возьмите скелет и добавьте 30% от себя — и текст оживёт.</p>
+    </div>
+  </section>
+
+  <!-- 7. ПРАКТИКА -->
+  <section class="section" id="s7">
+    <div class="section-label">07 — Практика</div>
+    <h2>Задание к уроку</h2>
+
+    <div class="card">
+      <div class="card-eyebrow">Что сделать прямо сейчас</div>
+      <ol class="steps">
+        <li>
+          <div>
+            <div class="step-title">Зарегистрируйтесь в ChatGPT</div>
+            <div class="step-desc">Через Gmail — самый простой способ.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Создайте проект под свой блог</div>
+            <div class="step-desc">Левая панель → Новый проект → назовите по нише или имени блога.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Попросите 5 идей для вашего сегмента</div>
+            <div class="step-desc">По формуле: опишите аудиторию + задачу + формат. Попробуйте два разных сегмента.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Доработайте лучшую идею</div>
+            <div class="step-desc">Добавьте 30% своего голоса: личную историю, детали, свой стиль.</div>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="divider">Чеклист выполнения</div>
+
+    <ul class="checklist" id="checklist">
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Зарегистрировалась / зарегистрировался в ChatGPT</div>
+          <div class="task-meta">Шаг 1</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Создала / создал проект под свой блог</div>
+          <div class="task-meta">Шаг 2</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Сгенерировала 5 идей по формуле промта</div>
+          <div class="task-meta">Шаг 3</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Доработала лучшую идею — добавила 30% своего</div>
+          <div class="task-meta">Шаг 4</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="progress-wrap" id="progressWrap" style="margin-top: 16px;">
+      <div class="progress-label">
+        <span>Прогресс урока</span>
+        <span id="progressText">0 / 4</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-done" id="checkProgress" style="width: 0%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЗАМЕТКИ -->
+  <section class="section" id="s8">
+    <div class="section-label">08 — Заметки</div>
+    <h2>Мои записи</h2>
+
+    <div class="note-field">
+      <div class="note-label">Лучший промт, который сработал</div>
+      <textarea class="note-textarea" rows="4" placeholder="Запишите промт, который дал самый точный результат..."></textarea>
+    </div>
+
+    <div class="note-field" style="margin-top: 12px;">
+      <div class="note-label">Сегменты моей аудитории</div>
+      <textarea class="note-textarea" rows="3" placeholder="Кто мои подписчики? Опишите 2–3 сегмента..."></textarea>
+    </div>
+  </section>
+
+  <!-- ИТОГ -->
+  <div class="callout-dark" id="s9" style="opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease;">
+    <h3>Итог урока</h3>
+    <p>ChatGPT — это инструмент, который слушается, когда с ним правильно говорят. Формула промта: аудитория + задача + формат. Правило 70/30 делает текст вашим. Всё это работает для любого блога в любой нише — просто подставьте свой контекст. А когда вы станете амбассадором FitStars, у вас уже будет готовый навык — останется только настроить помощника под платформу.</p>
+  </div>
+
+  <div class="btn-row">
+    <a href="m4-lesson3-custom-gpt.html" class="btn btn-primary">Перейти к уроку 3 →</a>
+    <button class="btn btn-ghost" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Наверх</button>
+  </div>
+
+</div>
+
+<script>
+// Прогресс скролла
+window.addEventListener('scroll', () => {
+  const el = document.getElementById('progressFill');
+  const total = document.body.scrollHeight - window.innerHeight;
+  el.style.width = (window.scrollY / total * 100) + '%';
+});
+
+// Появление секций
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.id === 's6') animateRuleBar();
+      if (e.target.id === 's9') e.target.style.opacity = 1, e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.section, #s9').forEach(s => observer.observe(s));
+
+// Анимация 70/30
+function animateRuleBar() {
+  const bar = document.getElementById('ruleBar');
+  if (!bar.classList.contains('animated')) {
+    bar.classList.add('animated');
+  }
+}
+
+// Чеклист
+function toggleCheck(li) {
+  li.classList.toggle('done');
+  updateProgress();
+}
+
+function updateProgress() {
+  const items = document.querySelectorAll('#checklist li');
+  const done = document.querySelectorAll('#checklist li.done').length;
+  document.getElementById('progressText').textContent = done + ' / ' + items.length;
+  document.getElementById('checkProgress').style.width = (done / items.length * 100) + '%';
+}
+</script>
+</body>
+</html>

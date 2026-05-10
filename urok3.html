@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Модуль 4 · Урок 3 — Custom GPT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --bg-soft: #F5F6F7;
+  --bg-muted: #EDEEF0;
+  --ink: #1A1A1A;
+  --ink-2: #4A4D52;
+  --ink-3: #8A8E94;
+  --line: #E4E6E9;
+  --accent: #C4F542;
+  --accent-strong: #B8E83D;
+  --accent-ink: #0F1A00;
+  --font-display: 'Unbounded', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 3px; background: var(--line);
+}
+.progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.2s; }
+
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.nav-title { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--ink); }
+.nav-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--ink); color: #fff;
+  padding: 5px 12px; border-radius: var(--radius-pill);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.nav-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+.wrap { max-width: 760px; margin: 0 auto; padding: 64px 32px 120px; }
+
+.hero { margin-bottom: 64px; }
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--ink-3); }
+.hero-title {
+  display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start;
+  margin-bottom: 24px;
+}
+.stamp {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 14px; background: var(--ink); color: #fff;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-top: 8px; white-space: nowrap;
+}
+.stamp.green { background: var(--accent); color: var(--accent-ink); }
+.title-text {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(26px, 3.5vw, 38px); line-height: 1.1; letter-spacing: -0.02em;
+}
+.hero-lead {
+  font-size: 18px; font-weight: 500; line-height: 1.6; color: var(--ink-2);
+  max-width: 620px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--bg-soft); border: 1px solid var(--line);
+  border-radius: var(--radius-pill); font-size: 12px; font-weight: 500;
+  color: var(--ink-2); font-family: var(--font-mono);
+}
+.chip.warn { background: #FFFBEB; border-color: #FCD34D; color: #92400E; }
+
+.section {
+  margin-bottom: 56px; padding-top: 40px; border-top: 1px solid var(--line);
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.section.visible { opacity: 1; transform: translateY(0); }
+.section-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px;
+}
+.section h2 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: 22px; letter-spacing: -0.01em; margin-bottom: 20px;
+}
+
+.key-point {
+  display: flex; gap: 16px; background: var(--bg-soft);
+  border-radius: var(--radius-md); padding: 20px 24px;
+  border-left: 3px solid var(--accent); margin: 20px 0;
+}
+.key-label {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); white-space: nowrap; padding-top: 3px;
+}
+.key-point p { font-weight: 500; margin: 0; }
+
+.card {
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); padding: 24px 28px; margin: 16px 0;
+}
+.card-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px;
+}
+
+.steps { counter-reset: step; list-style: none; padding: 0; display: grid; gap: 0; }
+.steps li {
+  counter-increment: step;
+  display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: start;
+  padding: 16px 0; border-bottom: 1px solid var(--line);
+}
+.steps li:last-child { border-bottom: none; }
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  color: var(--ink-3); padding-top: 3px;
+}
+.step-title { font-weight: 600; margin-bottom: 4px; }
+.step-desc { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+
+/* ——— СРАВНЕНИЕ ОБЫЧНЫЙ vs CUSTOM ——— */
+.compare {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0;
+}
+.compare-col {
+  border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden;
+}
+.compare-head {
+  padding: 14px 18px; font-family: var(--font-display); font-weight: 600;
+  font-size: 14px; border-bottom: 1px solid var(--line);
+}
+.compare-col.plain .compare-head { background: var(--bg-soft); }
+.compare-col.custom .compare-head { background: var(--accent); color: var(--accent-ink); }
+.compare-rows { padding: 6px 0; }
+.compare-row {
+  padding: 10px 18px; font-size: 13px; color: var(--ink-2);
+  border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px;
+}
+.compare-row:last-child { border-bottom: none; }
+.compare-row::before { content: '·'; color: var(--ink-3); font-size: 18px; flex-shrink: 0; }
+.compare-col.custom .compare-row::before { color: var(--accent-strong); }
+
+/* ——— АССИСТЕНТЫ-КАРТОЧКИ ——— */
+.assistants { display: grid; gap: 12px; margin: 16px 0; }
+.assistant {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 20px 24px; cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.assistant:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.assistant.active { border-color: var(--accent); background: #FAFFF0; }
+.assistant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.assistant-num {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--ink-3); letter-spacing: 0.06em;
+}
+.assistant-tag {
+  background: var(--bg-muted); border-radius: var(--radius-pill);
+  padding: 4px 10px; font-size: 11px; font-weight: 500; color: var(--ink-3);
+  font-family: var(--font-mono);
+}
+.assistant.active .assistant-tag { background: var(--accent); color: var(--accent-ink); }
+.assistant-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+.assistant-desc { font-size: 13px; color: var(--ink-2); }
+.assistant-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.assistant.active .assistant-body { max-height: 300px; }
+.assistant-content {
+  margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
+  font-size: 14px; color: var(--ink-2);
+}
+.assistant-content strong { color: var(--ink); }
+
+/* ——— ПОЛЯ КОНФИГА ——— */
+.config-fields { display: grid; gap: 12px; margin: 16px 0; }
+.config-field {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.config-field-head {
+  background: var(--bg-soft); padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.config-field-name {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--ink); letter-spacing: 0.04em;
+}
+.config-field-req {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px;
+}
+.req-yes { background: var(--accent); color: var(--accent-ink); }
+.req-no { background: var(--bg-muted); color: var(--ink-3); }
+.config-field-body { padding: 14px 18px; font-size: 14px; color: var(--ink-2); }
+.config-field-example {
+  font-family: var(--font-mono); font-size: 12px; background: var(--bg-soft);
+  border: 1px dashed var(--line); border-radius: 8px; padding: 10px 14px;
+  margin-top: 8px; color: var(--ink); line-height: 1.6;
+}
+
+/* ——— ЧЕКЛИСТ ——— */
+.checklist { list-style: none; padding: 0; display: grid; gap: 10px; }
+.checklist li {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 18px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--radius-md); cursor: pointer;
+  transition: border-color 0.2s, background 0.2s; user-select: none;
+}
+.checklist li:hover { border-color: var(--ink-3); }
+.checklist li.done { background: #FAFFF0; border-color: var(--accent); }
+.check-box {
+  flex: 0 0 22px; width: 22px; height: 22px; border-radius: 7px;
+  border: 1.5px solid var(--line); margin-top: 2px;
+  transition: all 0.2s; position: relative; background: var(--bg);
+}
+.checklist li.done .check-box { background: var(--accent); border-color: var(--accent); }
+.checklist li.done .check-box::after {
+  content: ''; position: absolute; left: 6px; top: 2px;
+  width: 6px; height: 11px;
+  border-right: 2px solid var(--accent-ink);
+  border-bottom: 2px solid var(--accent-ink);
+  transform: rotate(45deg);
+}
+.task-title { font-weight: 600; font-size: 15px; }
+.task-meta { font-size: 12px; color: var(--ink-3); margin-top: 3px; font-family: var(--font-mono); }
+
+/* ——— NOTE FIELD ——— */
+.note-field {
+  background: var(--bg-soft); border: 1px dashed #C4C7CC;
+  border-radius: var(--radius-md); padding: 20px; margin: 16px 0;
+}
+.note-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+}
+.note-textarea {
+  width: 100%; border: none; background: transparent; resize: none;
+  font-family: var(--font-body); font-size: 15px; color: var(--ink);
+  line-height: 1.8; outline: none;
+  background-image: repeating-linear-gradient(transparent, transparent 28px, var(--line) 28px, var(--line) 29px);
+  min-height: 120px;
+}
+.note-textarea::placeholder { color: var(--ink-3); }
+
+/* ——— ПРОГРЕСС ——— */
+.progress-wrap {
+  background: var(--bg-soft); border-radius: var(--radius-lg);
+  padding: 24px 28px; margin: 24px 0;
+}
+.progress-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px;
+  display: flex; justify-content: space-between;
+}
+.progress-track { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.progress-done {
+  height: 100%; background: var(--accent); border-radius: 99px;
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ——— ОШИБКИ ——— */
+.errors { display: grid; gap: 10px; margin: 16px 0; }
+.error-item {
+  display: flex; gap: 14px; align-items: start;
+  padding: 16px 18px; border-radius: var(--radius-md);
+  border: 1px solid var(--line); background: var(--bg);
+}
+.error-num {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--ink-3); flex-shrink: 0; padding-top: 2px;
+}
+.error-title { font-weight: 600; margin-bottom: 4px; }
+.error-desc { font-size: 13px; color: var(--ink-2); }
+
+/* ——— CALLOUT ——— */
+.callout-dark {
+  background: var(--ink); color: #fff;
+  border-radius: var(--radius-lg); padding: 28px 32px; margin: 24px 0;
+}
+.callout-dark h3 {
+  font-family: var(--font-display); font-weight: 500; font-size: 20px; margin-bottom: 10px;
+}
+.callout-dark p { color: #CFD1D4; font-size: 15px; }
+
+.divider {
+  display: flex; align-items: center; gap: 16px; margin: 28px 0;
+  color: var(--ink-3); font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-weight: 600; font-size: 15px;
+  padding: 14px 24px; border-radius: var(--radius-pill);
+  border: none; cursor: pointer; transition: all 0.15s; text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: var(--accent-strong); }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn-ghost:hover { background: var(--bg-muted); }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+
+.hl { background: var(--accent); color: var(--accent-ink); padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+.hl-line {
+  background-image: linear-gradient(transparent 55%, var(--accent) 55%, var(--accent) 92%, transparent 92%);
+  padding: 0 2px; font-weight: 600;
+}
+
+/* ——— КОНТЕКСТ УРОКА ——— */
+.context-note {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: #FFFBEB; border: 1px solid #FCD34D;
+  border-radius: var(--radius-md); padding: 20px 24px;
+  margin-bottom: 48px;
+}
+.context-note-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.context-note-title {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #92400E; margin-bottom: 6px;
+}
+.context-note p { font-size: 14px; color: #78350F; line-height: 1.6; margin: 0; }
+.context-note strong { color: #451A03; }
+
+@media (max-width: 640px) {
+  .nav { padding: 12px 20px; }
+  .nav-title { display: none; }
+  .wrap { padding: 40px 20px 80px; }
+  .compare { grid-template-columns: 1fr; }
+  .hero-title { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="nav">
+  <div class="nav-brand">FitStars · Модуль 4</div>
+  <div class="nav-title">Custom GPT</div>
+  <div class="nav-badge"><div class="nav-badge-dot"></div>Hard level</div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-eyebrow">Модуль 4 · Урок 3</div>
+    <div class="hero-title">
+      <span class="stamp green">Урок 3</span>
+      <span class="title-text">Custom GPT: персональный помощник под ваши задачи</span>
+    </div>
+    <p class="hero-lead">Создаёте GPT-ассистента, который один раз узнаёт вас — и дальше помнит всё без повторных объяснений.</p>
+    <div class="chips">
+      <span class="chip">~20 мин</span>
+      <span class="chip">Hard level</span>
+      <span class="chip warn">⚠ Нужен Plus / ~20$/мес</span>
+      <span class="chip">Ноутбук / ПК</span>
+    </div>
+  </header>
+
+  <!-- КОНТЕКСТ УРОКА -->
+  <div class="context-note">
+    <div class="context-note-icon">📌</div>
+    <div>
+      <div class="context-note-title">Контекст урока</div>
+      <p>В видео все примеры — для амбассадоров FitStars. Но Custom GPT — универсальный инструмент для <strong>любого блогера</strong>. Ниже разобраны три типа ассистентов: адаптируйте названия и инструкции под свою нишу. Когда вступите в амбассадорскую программу — просто добавите в базу знаний материалы FitStars, и ассистент сразу заработает на полную.</p>
+    </div>
+  </div>
+
+  <!-- 1. СУТЬ -->
+  <section class="section" id="s1">
+    <div class="section-label">01 — Суть</div>
+    <h2>Зачем нужен Custom GPT</h2>
+
+    <p style="margin-bottom: 16px;">Обычный ChatGPT — <span class="hl-line">чистый лист при каждом запросе</span>. Каждый раз приходится объяснять: кто вы, для кого пишете, какой тон, какой продукт. Снова и снова, как день сурка.</p>
+
+    <div class="key-point">
+      <div class="key-label">Главное</div>
+      <p>Custom GPT — ваш сотрудник, которого вы один раз наняли и обучили. Он знает контекст вашей работы без напоминаний.</p>
+    </div>
+
+    <div class="compare">
+      <div class="compare-col plain">
+        <div class="compare-head">Обычный ChatGPT</div>
+        <div class="compare-rows">
+          <div class="compare-row">Каждый раз — чистый лист</div>
+          <div class="compare-row">Нужно вводить контекст</div>
+          <div class="compare-row">Нельзя задать роль навсегда</div>
+          <div class="compare-row">Без базы знаний</div>
+          <div class="compare-row">Только для себя</div>
+        </div>
+      </div>
+      <div class="compare-col custom">
+        <div class="compare-head">Custom GPT</div>
+        <div class="compare-rows">
+          <div class="compare-row">Помнит всё — всегда</div>
+          <div class="compare-row">Контекст зашит один раз</div>
+          <div class="compare-row">Роль прописана навсегда</div>
+          <div class="compare-row">Загружаете свои файлы</div>
+          <div class="compare-row">Доступ для команды</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. ТРИ АССИСТЕНТА -->
+  <section class="section" id="s2">
+    <div class="section-label">02 — Примеры</div>
+    <h2>Три помощника для блогера</h2>
+    <p style="color: var(--ink-2); margin-bottom: 16px;">В уроке показаны примеры для амбассадора FitStars — но логика универсальна. Подставьте свою нишу. Нажмите на каждого — узнайте подробнее.</p>
+
+    <div class="assistants" id="assistants">
+      <div class="assistant" onclick="toggleAssistant(this)">
+        <div class="assistant-header">
+          <span class="assistant-num">01</span>
+          <span class="assistant-tag">Контент</span>
+        </div>
+        <div class="assistant-title">Контент-генератор</div>
+        <div class="assistant-desc">Пишет посты, Stories, Reels — в вашем тоне и для вашей аудитории</div>
+        <div class="assistant-body">
+          <div class="assistant-content">
+            <strong>Что умеет:</strong> генерирует посты, подписи к фото, идеи для контент-плана в вашем стиле и для вашей аудитории. Не использует канцелярит, пишет живо от первого лица.<br><br>
+            <strong>Для амбассадоров FitStars:</strong> добавьте в инструкции знание платформы, тренировок и аудитории — и он сразу заработает точнее.<br><br>
+            <strong>Стартовые фразы:</strong> «Напиши пост про моё утро» · «5 идей для Reels в моей нише» · «Подпись к фото»
+          </div>
+        </div>
+      </div>
+
+      <div class="assistant" onclick="toggleAssistant(this)">
+        <div class="assistant-header">
+          <span class="assistant-num">02</span>
+          <span class="assistant-tag">Продажи</span>
+        </div>
+        <div class="assistant-title">Консультант по продажам</div>
+        <div class="assistant-desc">Закрывает возражения подписчиков и помогает вести их к покупке</div>
+        <div class="assistant-body">
+          <div class="assistant-content">
+            <strong>Что умеет:</strong> помогает ответить на «дорого», «не для меня», «не верю» — честно и без давления. Работает для любого продукта или услуги в вашем блоге.<br><br>
+            <strong>Для амбассадоров FitStars:</strong> загрузите в базу знаний описание продуктов и тренировок — и он будет закрывать возражения с конкретными аргументами.<br><br>
+            <strong>Стартовые фразы:</strong> «Как ответить на возражение "дорого"» · «Напиши ответ скептику» · «Помоги закрыть сделку в переписке»
+          </div>
+        </div>
+      </div>
+
+      <div class="assistant" onclick="toggleAssistant(this)">
+        <div class="assistant-header">
+          <span class="assistant-num">03</span>
+          <span class="assistant-tag">Сторис</span>
+        </div>
+        <div class="assistant-title">Помощник по сторис</div>
+        <div class="assistant-desc">Сценарии для ежедневных Stories — коротко, вовлекающе, по делу</div>
+        <div class="assistant-body">
+          <div class="assistant-content">
+            <strong>Что умеет:</strong> создаёт сценарии сторис под любую задачу — прогрев, продажа, личный контент, опрос. Заточен под короткий формат с крючком в первом кадре.<br><br>
+            <strong>Стартовые фразы:</strong> «Сценарий сторис про моё утро» · «Сторис с опросом по теме блога» · «Прогрев к продаже моего продукта»
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. СОЗДАНИЕ -->
+  <section class="section" id="s3">
+    <div class="section-label">03 — Создание</div>
+    <h2>Пошаговая инструкция: создаём ассистента</h2>
+
+    <ol class="steps">
+      <li>
+        <div>
+          <div class="step-title">Откройте режим создания</div>
+          <div class="step-desc">Левая панель → «Explore» / «Исследуйте ChatGPT» → кнопка «+» → «Создать» (Create).</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Выберите вкладку «Конфигурация»</div>
+          <div class="step-desc">Два режима: «Create» (диалог с конструктором) и «Configure» (ручная настройка). Выбирайте «Configure» — полный контроль.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Заполните поля конфигурации</div>
+          <div class="step-desc">Название, описание, инструкции, стартовые фразы, база знаний. Подробнее — в следующем блоке.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Загрузите аватар</div>
+          <div class="step-desc">Круглая иконка с «+» вверху → загрузите аватар блога или логотип. Так не перепутаете с другими ассистентами в списке.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Протестируйте</div>
+          <div class="step-desc">Зайдите, задайте тестовый запрос. Если что-то не так — возвращайтесь в конфигурацию и правьте инструкцию.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Сохраните и настройте доступ</div>
+          <div class="step-desc">«Только я» / «По ссылке» / «Публичный». Нажмите «Создать» — получите ссылку для шеринга.</div>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 4. КОНФИГУРАЦИЯ -->
+  <section class="section" id="s4">
+    <div class="section-label">04 — Конфигурация</div>
+    <h2>Что заполнять в каждом поле</h2>
+
+    <div class="config-fields">
+      <div class="config-field">
+        <div class="config-field-head">
+          <span class="config-field-name">Название</span>
+          <span class="config-field-req req-yes">Обязательно</span>
+        </div>
+        <div class="config-field-body">
+          Отображается в списке и шапке чата. Дайте понятное имя — чтобы не путать ассистентов.
+          <div class="config-field-example">Content Master [Ваша ниша]<br><span style="opacity:0.6">Пример для амбассадора: Content Master FitStars</span></div>
+        </div>
+      </div>
+
+      <div class="config-field">
+        <div class="config-field-head">
+          <span class="config-field-name">Описание</span>
+          <span class="config-field-req req-yes">Обязательно</span>
+        </div>
+        <div class="config-field-body">
+          Коротко — о чём этот ассистент.
+          <div class="config-field-example">Помогаю создавать контент для блога о [ваша тема]: посты, сторис, подписи к фото, идеи для Reels. Знаю мою аудиторию и пишу в нужном тоне.<br><span style="opacity:0.6">Для амбассадора: «Знаю аудиторию FitStars и платформу»</span></div>
+        </div>
+      </div>
+
+      <div class="config-field">
+        <div class="config-field-head">
+          <span class="config-field-name">Инструкции</span>
+          <span class="config-field-req req-yes">Самое важное</span>
+        </div>
+        <div class="config-field-body">
+          Прописываете роль, задачи, стиль и ограничения. Чем подробнее — тем точнее результат. Объём: 200–2000 символов и больше. Примеры готовых инструкций — под видео.
+          <div class="config-field-example">Ты — контент-менеджер блогера в нише [ваша тема]. Моя аудитория — [опишите: кто эти люди, возраст, боли]. Пишешь живо, от первого лица, без канцелярита. Знаешь форматы контента, который я создаю...<br><span style="opacity:0.6">Для амбассадора: добавьте описание FitStars, тренировок и аудитории платформы</span></div>
+        </div>
+      </div>
+
+      <div class="config-field">
+        <div class="config-field-head">
+          <span class="config-field-name">Стартовые фразы</span>
+          <span class="config-field-req req-no">Рекомендуется</span>
+        </div>
+        <div class="config-field-body">
+          4 кнопки-подсказки при открытии — для быстрого запуска без написания промта.
+          <div class="config-field-example">«Напиши пост на тему [ваша ниша]» · «5 идей для Reels» · «Подпись к фото» · «Сторис с опросом»</div>
+        </div>
+      </div>
+
+      <div class="config-field">
+        <div class="config-field-head">
+          <span class="config-field-name">База знаний</span>
+          <span class="config-field-req req-no">Очень важно</span>
+        </div>
+        <div class="config-field-body">
+          Загружайте всё: PDF, Word, таблицы, гайды по продукту, прайсы, описания тренировок. GPT будет опираться на эти файлы при ответах.
+        </div>
+      </div>
+
+      <div class="config-field">
+        <div class="config-field-head">
+          <span class="config-field-name">Возможности</span>
+          <span class="config-field-req req-no">По желанию</span>
+        </div>
+        <div class="config-field-body">
+          Включите: поиск в сети (для инфоповодов), холст, генерация изображений (обложки, карусели).
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. КОМАНДА -->
+  <section class="section" id="s5">
+    <div class="section-label">05 — Продвинутое</div>
+    <h2>Несколько ассистентов, команда, обновления</h2>
+
+    <ol class="steps">
+      <li>
+        <div>
+          <div class="step-title">Несколько ассистентов под разные задачи</div>
+          <div class="step-desc">Контент, продажи, сторис — у каждого своя роль и инструкции. Чёткое название + аватар = не запутаетесь.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Доступ для ассистента или команды</div>
+          <div class="step-desc">Сохраните с режимом «По ссылке» — отправьте ссылку команде. Все работают на одном инструменте, один общий контекст.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="step-title">Обновляйте инструкции по мере роста</div>
+          <div class="step-desc">Появился новый продукт, изменилась аудитория? Зайдите в конфигурацию и обновите инструкцию. Помощник развивается вместе с вами.</div>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 6. ТИПИЧНЫЕ ОШИБКИ -->
+  <section class="section" id="s6">
+    <div class="section-label">06 — Ошибки</div>
+    <h2>Типичные ошибки при создании Custom GPT</h2>
+
+    <div class="errors">
+      <div class="error-item">
+        <div class="error-num">01</div>
+        <div>
+          <div class="error-title">Слишком короткие инструкции</div>
+          <div class="error-desc">«Ты помощник блогера» — это не инструкция. Опишите роль, аудиторию, стиль, запрещённые приёмы. Чем подробнее — тем лучше.</div>
+        </div>
+      </div>
+      <div class="error-item">
+        <div class="error-num">02</div>
+        <div>
+          <div class="error-title">Не загружена база знаний</div>
+          <div class="error-desc">Без файлов ассистент работает на общих знаниях. Загрузите хотя бы один файл про продукт — и качество вырастет кратно.</div>
+        </div>
+      </div>
+      <div class="error-item">
+        <div class="error-num">03</div>
+        <div>
+          <div class="error-title">Один ассистент на все задачи</div>
+          <div class="error-desc">Контент и продажи — разные роли. Создайте отдельных помощников с чёткими специализациями.</div>
+        </div>
+      </div>
+      <div class="error-item">
+        <div class="error-num">04</div>
+        <div>
+          <div class="error-title">Не тестируется после создания</div>
+          <div class="error-desc">Обязательно задайте 3–5 реальных запросов. Не нравится ответ — правьте инструкцию. Это итерация, а не одноразовая настройка.</div>
+        </div>
+      </div>
+      <div class="error-item">
+        <div class="error-num">05</div>
+        <div>
+          <div class="error-title">Не обновляются инструкции</div>
+          <div class="error-desc">Ваш блог растёт, аудитория меняется. Возвращайтесь в конфигурацию и актуализируйте раз в месяц.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. ПРАКТИКА -->
+  <section class="section" id="s7">
+    <div class="section-label">07 — Практика</div>
+    <h2>Задание к уроку</h2>
+
+    <div class="card">
+      <div class="card-eyebrow">Что сделать прямо сейчас</div>
+      <ol class="steps">
+        <li>
+          <div>
+            <div class="step-title">Убедитесь, что есть подписка ChatGPT Plus</div>
+            <div class="step-desc">Custom GPT не работает на тарифе Free. Plus — ~20$/мес, оплата через международную карту.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Создайте ассистента «Content Master [Ваша ниша]»</div>
+            <div class="step-desc">Explore → «+» → Configure → заполните все поля по шаблону выше. Для амбассадоров FitStars — называйте «Content Master FitStars».</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Загрузите хотя бы один файл в базу знаний</div>
+            <div class="step-desc">Гайд по платформе, описание тренировок, прайс — всё, что есть.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Задайте три типичные задачи</div>
+            <div class="step-desc">Контент-план на месяц · Ответ на возражение · Сценарий сторис</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Скорректируйте инструкцию по итогам теста</div>
+            <div class="step-desc">Что не понравилось в ответах — добавьте в инструкцию как уточнение.</div>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="divider">Чеклист выполнения</div>
+
+    <ul class="checklist" id="checklist">
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Подписка ChatGPT Plus активирована</div>
+          <div class="task-meta">Шаг 1</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Ассистент «Content Master [Ниша]» создан</div>
+          <div class="task-meta">Шаг 2</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">База знаний загружена (хотя бы 1 файл)</div>
+          <div class="task-meta">Шаг 3</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Протестирована на 3 реальных задачах</div>
+          <div class="task-meta">Шаг 4</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Инструкция скорректирована по итогам теста</div>
+          <div class="task-meta">Шаг 5</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="progress-wrap" style="margin-top: 16px;">
+      <div class="progress-label">
+        <span>Прогресс урока</span>
+        <span id="progressText">0 / 5</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-done" id="checkProgress" style="width: 0%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЗАМЕТКИ -->
+  <section class="section" id="s8">
+    <div class="section-label">08 — Заметки</div>
+    <h2>Мои настройки</h2>
+
+    <div class="note-field">
+      <div class="note-label">Инструкции для моего ассистента (черновик)</div>
+      <textarea class="note-textarea" rows="5" placeholder="Ты — контент-менеджер блогера в нише [ваша тема]. Моя аудитория — [кто эти люди]. Пишешь живо, от первого лица, без канцелярита...&#10;&#10;Для амбассадоров FitStars: добавьте сюда описание платформы и аудитории"></textarea>
+    </div>
+
+    <div class="note-field" style="margin-top: 12px;">
+      <div class="note-label">Файлы, которые хочу загрузить в базу знаний</div>
+      <textarea class="note-textarea" rows="3" placeholder="Гайд по вашей теме, прайс, описания продуктов...&#10;Для амбассадоров FitStars: гайд по платформе, описание тренировок, прайс"></textarea>
+    </div>
+  </section>
+
+  <!-- ИТОГ -->
+  <div class="callout-dark" id="s9" style="opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease;">
+    <h3>Итог урока</h3>
+    <p>Custom GPT — это система, а не разовый запрос. Один раз настроили → работает за вас каждый день. Этот инструмент работает для блогера в любой нише. А когда вы станете амбассадором FitStars — просто добавьте в базу знаний материалы платформы, и ассистент заработает ещё точнее. Создайте трёх помощников: контент, продажи, сторис — и ваши возможности станут по-настоящему безграничными.</p>
+  </div>
+
+  <div class="btn-row">
+    <a href="m4-lesson1-chatgpt-intro.html" class="btn btn-ghost">← Урок 1</a>
+    <button class="btn btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Наверх</button>
+  </div>
+
+</div>
+
+<script>
+window.addEventListener('scroll', () => {
+  const el = document.getElementById('progressFill');
+  const total = document.body.scrollHeight - window.innerHeight;
+  el.style.width = (window.scrollY / total * 100) + '%';
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.id === 's9') {
+        e.target.style.opacity = 1;
+        e.target.style.transform = 'translateY(0)';
+      }
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.section, #s9').forEach(s => observer.observe(s));
+
+function toggleAssistant(el) {
+  const wasActive = el.classList.contains('active');
+  document.querySelectorAll('.assistant').forEach(a => a.classList.remove('active'));
+  if (!wasActive) el.classList.add('active');
+}
+
+function toggleCheck(li) {
+  li.classList.toggle('done');
+  updateProgress();
+}
+
+function updateProgress() {
+  const items = document.querySelectorAll('#checklist li');
+  const done = document.querySelectorAll('#checklist li.done').length;
+  document.getElementById('progressText').textContent = done + ' / ' + items.length;
+  document.getElementById('checkProgress').style.width = (done / items.length * 100) + '%';
+}
+</script>
+</body>
+</html>

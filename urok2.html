@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Модуль 4 · Урок 2 — Пакетное создание контента</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --bg-soft: #F5F6F7;
+  --bg-muted: #EDEEF0;
+  --ink: #1A1A1A;
+  --ink-2: #4A4D52;
+  --ink-3: #8A8E94;
+  --line: #E4E6E9;
+  --accent: #C4F542;
+  --accent-strong: #B8E83D;
+  --accent-ink: #0F1A00;
+  --font-display: 'Unbounded', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 3px; background: var(--line);
+}
+.progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.2s; }
+
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.nav-title { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--ink); }
+.nav-time {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--ink-3);
+}
+.nav-time-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+.wrap { max-width: 760px; margin: 0 auto; padding: 64px 32px 120px; }
+
+/* ——— HERO ——— */
+.hero { margin-bottom: 48px; }
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--ink-3); }
+.hero-title {
+  display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start;
+  margin-bottom: 24px;
+}
+.stamp {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 14px; background: var(--accent); color: var(--accent-ink);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-top: 8px; white-space: nowrap;
+}
+.title-text {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(26px, 3.8vw, 38px); line-height: 1.1; letter-spacing: -0.02em;
+}
+.hero-lead { font-size: 18px; font-weight: 500; line-height: 1.6; color: var(--ink-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--bg-soft); border: 1px solid var(--line);
+  border-radius: var(--radius-pill); font-size: 12px; font-weight: 500;
+  color: var(--ink-2); font-family: var(--font-mono);
+}
+
+/* ——— CONTEXT NOTE ——— */
+.context-note {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: #FFFBEB; border: 1px solid #FCD34D;
+  border-radius: var(--radius-md); padding: 20px 24px;
+  margin-bottom: 48px;
+}
+.context-note-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.context-note-title {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #92400E; margin-bottom: 6px;
+}
+.context-note p { font-size: 14px; color: #78350F; line-height: 1.6; margin: 0; }
+.context-note strong { color: #451A03; }
+
+/* ——— SECTIONS ——— */
+.section {
+  margin-bottom: 56px; padding-top: 40px; border-top: 1px solid var(--line);
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.section.visible { opacity: 1; transform: translateY(0); }
+.section-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px;
+}
+.section h2 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: 22px; letter-spacing: -0.01em; margin-bottom: 20px;
+}
+
+/* ——— KEY POINT ——— */
+.key-point {
+  display: flex; gap: 16px; background: var(--bg-soft);
+  border-radius: var(--radius-md); padding: 20px 24px;
+  border-left: 3px solid var(--accent); margin: 20px 0;
+}
+.key-label {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); white-space: nowrap; padding-top: 3px;
+}
+.key-point p { font-weight: 500; margin: 0; }
+
+/* ——— CARD ——— */
+.card {
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); padding: 24px 28px; margin: 16px 0;
+}
+.card-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 14px;
+}
+
+/* ——— STEPS ——— */
+.steps { counter-reset: step; list-style: none; padding: 0; display: grid; gap: 0; }
+.steps li {
+  counter-increment: step;
+  display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: start;
+  padding: 16px 0; border-bottom: 1px solid var(--line);
+}
+.steps li:last-child { border-bottom: none; }
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  color: var(--ink-3); padding-top: 3px;
+}
+.step-title { font-weight: 600; margin-bottom: 4px; }
+.step-desc { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+
+/* ——— ПРОМТЫ ——— */
+.prompt-block {
+  background: var(--bg-soft); border: 1px solid var(--line);
+  border-radius: var(--radius-md); overflow: hidden; margin: 16px 0;
+}
+.prompt-header {
+  padding: 10px 18px; background: var(--bg-muted);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.prompt-label {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3);
+}
+.copy-btn {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 10px; cursor: pointer;
+  color: var(--ink-2); transition: all 0.15s;
+}
+.copy-btn:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.copy-btn.copied { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.prompt-body {
+  padding: 16px 18px;
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
+  color: var(--ink);
+}
+.prompt-body .placeholder {
+  background: rgba(196,245,66,0.25); border-radius: 4px;
+  padding: 1px 5px; color: var(--accent-ink);
+}
+.prompt-tip {
+  padding: 10px 18px; border-top: 1px dashed var(--line);
+  font-size: 12px; color: var(--ink-3); line-height: 1.5;
+}
+
+/* ——— ПЛАН СТОРИС — НЕДЕЛЯ ——— */
+.week-plan { display: grid; gap: 10px; margin: 16px 0; }
+.day-card {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  overflow: hidden; transition: border-color 0.2s;
+}
+.day-card:hover { border-color: var(--accent); }
+.day-head {
+  display: grid; grid-template-columns: 72px 1fr auto;
+  align-items: center; padding: 14px 18px; cursor: pointer;
+  gap: 14px;
+}
+.day-num {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase;
+}
+.day-title { font-weight: 600; font-size: 15px; }
+.day-toggle {
+  width: 24px; height: 24px; border-radius: 50%; background: var(--bg-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--ink-3); flex-shrink: 0;
+  transition: transform 0.25s, background 0.2s;
+}
+.day-card.open .day-toggle { transform: rotate(180deg); background: var(--accent); color: var(--accent-ink); }
+.day-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.day-card.open .day-body { max-height: 300px; }
+.day-content {
+  padding: 0 18px 16px; border-top: 1px solid var(--line);
+  padding-top: 14px; display: grid; gap: 8px;
+}
+.day-format {
+  display: flex; gap: 8px; align-items: center;
+}
+.format-tag {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px;
+}
+.tag-stories { background: #EDE9FE; color: #5B21B6; }
+.tag-post { background: #DBEAFE; color: #1D4ED8; }
+.tag-reels { background: #FCE7F3; color: #9D174D; }
+.day-hint { font-size: 13px; color: var(--ink-2); }
+
+/* ——— ПРИЁМЫ ——— */
+.tricks { display: grid; gap: 12px; margin: 16px 0; }
+.trick {
+  display: grid; grid-template-columns: 40px 1fr; gap: 16px;
+  padding: 18px 20px; border: 1px solid var(--line);
+  border-radius: var(--radius-md); align-items: start;
+  transition: border-color 0.2s;
+}
+.trick:hover { border-color: var(--accent); }
+.trick-icon {
+  width: 40px; height: 40px; border-radius: var(--radius-sm);
+  background: var(--bg-soft); display: flex; align-items: center;
+  justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.trick-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.trick-desc { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+.trick-example {
+  font-family: var(--font-mono); font-size: 12px; color: var(--ink-3);
+  background: var(--bg-soft); border-radius: 6px; padding: 8px 12px;
+  margin-top: 8px; line-height: 1.5; border-left: 2px solid var(--accent);
+}
+
+/* ——— СХЕМА ПАКЕТНОГО ПОДХОДА ——— */
+.pipeline {
+  display: flex; align-items: stretch; gap: 0; margin: 20px 0;
+  overflow-x: auto; padding-bottom: 4px;
+}
+.pipe-step {
+  flex: 1; min-width: 130px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; position: relative;
+}
+.pipe-step + .pipe-step::before {
+  content: '→';
+  position: absolute; left: -14px; top: 28px;
+  font-size: 16px; color: var(--ink-3);
+}
+.pipe-bubble {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--bg-soft); border: 2px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 10px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.pipe-step:hover .pipe-bubble { border-color: var(--accent); background: #FAFFF0; }
+.pipe-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.pipe-sub { font-size: 11px; color: var(--ink-3); font-family: var(--font-mono); }
+
+/* ——— ЧЕКЛИСТ ——— */
+.checklist { list-style: none; padding: 0; display: grid; gap: 10px; }
+.checklist li {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 18px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--radius-md); cursor: pointer;
+  transition: border-color 0.2s, background 0.2s; user-select: none;
+}
+.checklist li:hover { border-color: var(--ink-3); }
+.checklist li.done { background: #FAFFF0; border-color: var(--accent); }
+.check-box {
+  flex: 0 0 22px; width: 22px; height: 22px; border-radius: 7px;
+  border: 1.5px solid var(--line); margin-top: 2px;
+  transition: all 0.2s; position: relative; background: var(--bg);
+}
+.checklist li.done .check-box { background: var(--accent); border-color: var(--accent); }
+.checklist li.done .check-box::after {
+  content: ''; position: absolute; left: 6px; top: 2px;
+  width: 6px; height: 11px;
+  border-right: 2px solid var(--accent-ink);
+  border-bottom: 2px solid var(--accent-ink);
+  transform: rotate(45deg);
+}
+.task-title { font-weight: 600; font-size: 15px; }
+.task-meta { font-size: 12px; color: var(--ink-3); margin-top: 3px; font-family: var(--font-mono); }
+
+/* ——— NOTE FIELD ——— */
+.note-field {
+  background: var(--bg-soft); border: 1px dashed #C4C7CC;
+  border-radius: var(--radius-md); padding: 20px; margin: 16px 0;
+}
+.note-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+}
+.note-textarea {
+  width: 100%; border: none; background: transparent; resize: none;
+  font-family: var(--font-body); font-size: 15px; color: var(--ink);
+  line-height: 1.8; outline: none;
+  background-image: repeating-linear-gradient(transparent, transparent 28px, var(--line) 28px, var(--line) 29px);
+  min-height: 112px;
+}
+.note-textarea::placeholder { color: var(--ink-3); }
+
+/* ——— PROGRESS ——— */
+.progress-wrap {
+  background: var(--bg-soft); border-radius: var(--radius-lg);
+  padding: 24px 28px; margin: 24px 0;
+}
+.progress-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px;
+  display: flex; justify-content: space-between;
+}
+.progress-track { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.progress-done {
+  height: 100%; background: var(--accent); border-radius: 99px;
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ——— DIVIDER ——— */
+.divider {
+  display: flex; align-items: center; gap: 16px; margin: 28px 0;
+  color: var(--ink-3); font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+/* ——— CALLOUT ——— */
+.callout-dark {
+  background: var(--ink); color: #fff;
+  border-radius: var(--radius-lg); padding: 28px 32px; margin: 24px 0;
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.callout-dark.visible { opacity: 1; transform: translateY(0); }
+.callout-dark h3 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin-bottom: 10px; }
+.callout-dark p { color: #CFD1D4; font-size: 15px; }
+
+/* ——— BUTTONS ——— */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-weight: 600; font-size: 15px;
+  padding: 14px 24px; border-radius: var(--radius-pill);
+  border: none; cursor: pointer; transition: all 0.15s; text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: var(--accent-strong); }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn-ghost:hover { background: var(--bg-muted); }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+
+.hl { background: var(--accent); color: var(--accent-ink); padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+.hl-line {
+  background-image: linear-gradient(transparent 55%, var(--accent) 55%, var(--accent) 92%, transparent 92%);
+  padding: 0 2px; font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .nav { padding: 12px 20px; }
+  .nav-title { display: none; }
+  .wrap { padding: 40px 20px 80px; }
+  .hero-title { grid-template-columns: 1fr; }
+  .day-head { grid-template-columns: 60px 1fr 24px; }
+  .pipeline { gap: 8px; }
+  .pipe-step + .pipe-step::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="nav">
+  <div class="nav-brand">FitStars · Модуль 4</div>
+  <div class="nav-title">Пакетное создание контента</div>
+  <div class="nav-time"><div class="nav-time-dot"></div>~15 мин чтения</div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-eyebrow">Модуль 4 · Урок 2</div>
+    <div class="hero-title">
+      <span class="stamp">Урок 2</span>
+      <span class="title-text">Эффективное создание контента с ChatGPT</span>
+    </div>
+    <p class="hero-lead">Учимся работать пакетно: за один сеанс — контент-план на неделю, готовые посты и 10 заголовков для Reels. Только практика, никакой теории.</p>
+    <div class="chips">
+      <span class="chip">15 мин</span>
+      <span class="chip">Только практика</span>
+      <span class="chip">Все тарифы</span>
+      <span class="chip">Готовые промты</span>
+    </div>
+  </header>
+
+  <!-- CONTEXT NOTE -->
+  <div class="context-note">
+    <div class="context-note-icon">📌</div>
+    <div>
+      <div class="context-note-title">Контекст урока</div>
+      <p>В видео примеры разобраны для амбассадоров FitStars (фитнес, домашние тренировки, мамы в декрете). <strong>Всё работает для любого блогера</strong> в любой нише — просто замените тему и аудиторию в промтах на свои. Когда вступите в амбассадорскую программу — подставьте FitStars, и схема заработает сразу.</p>
+    </div>
+  </div>
+
+  <!-- 1. ПРОБЛЕМА -->
+  <section class="section" id="s1">
+    <div class="section-label">01 — Проблема</div>
+    <h2>Почему один пост в день — это тупик</h2>
+
+    <p style="margin-bottom: 16px;">Контент блогера — это <span class="hl-line">бесконечный поток</span>: посты, Stories, Reels, ответы на комментарии, снова пост. Если каждую единицу вымучивать по два часа — вас просто не хватит.</p>
+
+    <div class="key-point">
+      <div class="key-label">Главная проблема</div>
+      <p>Человек умеет сделать один хороший пост. Но сесть и за час собрать контент-план на неделю — не получается. Через две недели всё возвращается к «сяду напишу, когда придёт вдохновение».</p>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Решение — пакетная работа</div>
+      <p style="margin-bottom: 16px;">Вместо того чтобы каждый день придумывать тему с нуля — за один сеанс генерируем сразу всё: смыслы на неделю, тексты, заголовки. ChatGPT не устаёт и не ждёт вдохновения.</p>
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-bubble">💡</div>
+          <div class="pipe-name">Смыслы</div>
+          <div class="pipe-sub">7 идей одним запросом</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-bubble">✍️</div>
+          <div class="pipe-name">Посты</div>
+          <div class="pipe-sub">Разворачиваем каждую идею</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-bubble">🎬</div>
+          <div class="pipe-name">Reels</div>
+          <div class="pipe-sub">10 заголовков за 1 запрос</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-bubble">📋</div>
+          <div class="pipe-name">Таблица</div>
+          <div class="pipe-sub">Готовый план на неделю</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. ШАГ 1 — СМЫСЛЫ -->
+  <section class="section" id="s2">
+    <div class="section-label">02 — Шаг 1</div>
+    <h2>Сначала — смыслы, потом — текст</h2>
+
+    <p style="margin-bottom: 16px;">Не просите ChatGPT сразу писать сценарий на весь день. Начните со смыслов — коротко, одной строкой. Прочитайте, выберите подходящие, и только потом разворачивайте в контент.</p>
+
+    <div class="key-point">
+      <div class="key-label">Принцип</div>
+      <p>Раскрываем как капусту: сначала смысл → потом пост → потом сценарий Reels. Каждый слой проверяем перед тем, как идти дальше.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт №1 — план сторис на неделю</div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Копируйте и адаптируйте</span>
+          <button class="copy-btn" onclick="copyPrompt(this, 'p1')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="p1">Составь план сторис на неделю для <span class="placeholder">[ваша ниша / тема]</span>. Аудитория: <span class="placeholder">[кто ваши подписчики]</span>. 7 идей, каждая в одном предложении.</div>
+        <div class="prompt-tip">💡 Для амбассадора FitStars: «...для фитнес-блогера. Тема: домашние тренировки для занятых мам»</div>
+      </div>
+
+      <p style="font-size: 14px; color: var(--ink-2); margin-top: 12px;">Получили 7 идей — не подходит? Просто попросите ещё: «дай ещё 7 вариантов» или «сделай темы более личными». Можно запрашивать 17, 27 идей — пока не найдёте свои.</p>
+    </div>
+  </section>
+
+  <!-- 3. ПЛАН НА НЕДЕЛЮ -->
+  <section class="section" id="s3">
+    <div class="section-label">03 — Пример</div>
+    <h2>Как выглядит план сторис на неделю</h2>
+    <p style="color: var(--ink-2); margin-bottom: 16px;">Пример из урока — для фитнес-тематики и мам в декрете. Нажмите на день, чтобы увидеть подробности и подсказки по форматам.</p>
+
+    <div class="week-plan" id="weekPlan">
+      <div class="day-card" onclick="toggleDay(this)">
+        <div class="day-head">
+          <span class="day-num">День 1</span>
+          <span class="day-title">Реальное утро в декрете</span>
+          <span class="day-toggle">▼</span>
+        </div>
+        <div class="day-body"><div class="day-content">
+          <div class="day-hint">Показать, как реально выглядит утро с ребёнком, и задать вопрос: «Как думаешь, реально ли сюда вписать тренировку?»</div>
+          <div class="day-format"><span class="format-tag tag-stories">Сторис</span><span class="day-hint">Сторителлинг + опрос</span></div>
+        </div></div>
+      </div>
+
+      <div class="day-card" onclick="toggleDay(this)">
+        <div class="day-head">
+          <span class="day-num">День 2</span>
+          <span class="day-title">15 минут тренировки — доказательство</span>
+          <span class="day-toggle">▼</span>
+        </div>
+        <div class="day-body"><div class="day-content">
+          <div class="day-hint">Три коротких фрагмента тренировки + мысль: «Это заняло 15 минут. Угадаешь, когда я это сделала?»</div>
+          <div class="day-format"><span class="format-tag tag-stories">Сторис</span><span class="format-tag tag-reels">Reels</span><span class="day-hint">Видео-доказательство</span></div>
+        </div></div>
+      </div>
+
+      <div class="day-card" onclick="toggleDay(this)">
+        <div class="day-head">
+          <span class="day-num">День 3</span>
+          <span class="day-title">Личная история про усталость и срывы</span>
+          <span class="day-toggle">▼</span>
+        </div>
+        <div class="day-body"><div class="day-content">
+          <div class="day-hint">Честный рассказ: как тренировки повлияли на состояние, настроение, отношения. Самый личный и вовлекающий день.</div>
+          <div class="day-format"><span class="format-tag tag-post">Пост</span><span class="format-tag tag-stories">Сторис</span><span class="day-hint">Текст от первого лица</span></div>
+        </div></div>
+      </div>
+
+      <div class="day-card" onclick="toggleDay(this)">
+        <div class="day-head">
+          <span class="day-num">День 4</span>
+          <span class="day-title">Разрушаем миф про зал</span>
+          <span class="day-toggle">▼</span>
+        </div>
+        <div class="day-body"><div class="day-content">
+          <div class="day-hint">«Чтобы вернуться в форму — нужен зал» → опровергаем своим примером и результатом.</div>
+          <div class="day-format"><span class="format-tag tag-post">Пост</span><span class="format-tag tag-reels">Reels</span><span class="day-hint">Карусель или разговорный ролик</span></div>
+        </div></div>
+      </div>
+
+      <div class="day-card" onclick="toggleDay(this)">
+        <div class="day-head">
+          <span class="day-num">День 5</span>
+          <span class="day-title">Интерактив: что мешает начать</span>
+          <span class="day-toggle">▼</span>
+        </div>
+        <div class="day-body"><div class="day-content">
+          <div class="day-hint">Опрос или голосование: что мешает тренироваться? После — делимся своим опытом и ответами.</div>
+          <div class="day-format"><span class="format-tag tag-stories">Сторис</span><span class="day-hint">Вовлечение + ответы в личку</span></div>
+        </div></div>
+      </div>
+
+      <div class="day-card" onclick="toggleDay(this)">
+        <div class="day-head">
+          <span class="day-num">День 6</span>
+          <span class="day-title">Тренировка с ребёнком</span>
+          <span class="day-toggle">▼</span>
+        </div>
+        <div class="day-body"><div class="day-content">
+          <div class="day-hint">Показываем, как заниматься, когда ребёнок рядом. Живой, тёплый формат — аудитория обожает такой контент.</div>
+          <div class="day-format"><span class="format-tag tag-reels">Reels</span><span class="format-tag tag-stories">Сторис</span><span class="day-hint">Видео behind the scenes</span></div>
+        </div></div>
+      </div>
+
+      <div class="day-card" onclick="toggleDay(this)">
+        <div class="day-head">
+          <span class="day-num">День 7</span>
+          <span class="day-title">Простой вход: с чего начать</span>
+          <span class="day-toggle">▼</span>
+        </div>
+        <div class="day-body"><div class="day-content">
+          <div class="day-hint">Призыв к действию: «Хочешь так же? Начни с коротких тренировок». Конвертирующий день недели.</div>
+          <div class="day-format"><span class="format-tag tag-post">Пост</span><span class="format-tag tag-stories">Сторис</span><span class="day-hint">CTA + ссылка на продукт</span></div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="key-point" style="margin-top: 20px;">
+      <div class="key-label">Правило</div>
+      <p>Один смысл на день — и раскручивайте его с разных сторон. Не пытайтесь в один день рассказать обо всём: это будет обо всём и ни о чём.</p>
+    </div>
+  </section>
+
+  <!-- 4. ШАГ 2 — ПОСТ -->
+  <section class="section" id="s4">
+    <div class="section-label">04 — Шаг 2</div>
+    <h2>Разворачиваем идею в пост</h2>
+
+    <p style="margin-bottom: 16px;">Выбрали одну идею из плана — теперь просим написать пост. <span class="hl-line">Указываем стиль явно</span>, иначе получим канцелярский текст, который сразу видно.</p>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт №2 — текст поста из идеи</div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Копируйте и адаптируйте</span>
+          <button class="copy-btn" onclick="copyPrompt(this, 'p2')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="p2">Напиши текст поста на основе идеи №<span class="placeholder">[номер]</span>. Стиль: живой, от первого лица, без канцелярита.</div>
+        <div class="prompt-tip">💡 Если текст вышел сухим — добавьте: «Перепиши с личной историей, как будто рассказываю подруге»</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color: var(--accent);">
+      <div class="card-eyebrow">Пример результата из урока</div>
+      <p style="font-size: 15px; line-height: 1.7; color: var(--ink-2); font-style: italic;">«Иногда я ловлю себя на том, что злюсь вообще на всё — на шум, на бесконечные "мам", на разбросанные игрушки. Долго думала, что это нормально: в декрете надо просто пережить. Но внутри было ощущение, что я как будто исчезла. Осталась только функция — мама...»</p>
+      <p style="font-size: 13px; color: var(--ink-3); margin-top: 10px;">Живой, личный, триггерный текст — потому что в промте явно указали стиль и аудиторию.</p>
+    </div>
+  </section>
+
+  <!-- 5. ШАГ 3 — REELS -->
+  <section class="section" id="s5">
+    <div class="section-label">05 — Шаг 3</div>
+    <h2>10 заголовков для Reels за один запрос</h2>
+
+    <p style="margin-bottom: 16px;">Первая фраза Reels — это крючок. Если зритель не зацепился в первую секунду, он ушёл. Просим сразу 10 вариантов — чтобы выбрать лучший, а не довольствоваться первым попавшимся.</p>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт №3 — заголовки для Reels</div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Копируйте и адаптируйте</span>
+          <button class="copy-btn" onclick="copyPrompt(this, 'p3')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="p3">Придумай 10 цепляющих заголовков для Reels про <span class="placeholder">[ваша тема]</span>. Аудитория: <span class="placeholder">[кто ваши подписчики]</span>.</div>
+        <div class="prompt-tip">💡 Пример из урока: «...для Reels про утреннюю зарядку дома»</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-eyebrow">Примеры заголовков из урока</div>
+      <ol class="steps">
+        <li><div><div class="step-title">«Я начала с 10 минут утром — и вот что произошло через неделю»</div><div class="step-desc">Интрига + результат</div></div></li>
+        <li><div><div class="step-title">«Утренние тренировки, о которых тебе не расскажет фитнес-блогер»</div><div class="step-desc">Противоречие + обещание эксклюзива</div></div></li>
+        <li><div><div class="step-title">«Почему утро решает, будешь ли ты в ресурсе весь день?»</div><div class="step-desc">Вопрос + мотивация</div></div></li>
+        <li><div><div class="step-title">«Ты устаёшь уже с утра? Попробуй это перед завтраком»</div><div class="step-desc">Боль аудитории + решение</div></div></li>
+        <li><div><div class="step-title">«Я не верила в утреннюю зарядку, пока не увидела это»</div><div class="step-desc">Личный поворот + интрига</div></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 6. ФИНАЛЬНЫЙ ПРОМТ — ТАБЛИЦА -->
+  <section class="section" id="s6">
+    <div class="section-label">06 — Шаг 4</div>
+    <h2>Один промт — и весь контент в таблице</h2>
+
+    <p style="margin-bottom: 16px;">После того как смыслы утверждены — один мощный запрос собирает всё сразу: посты + сценарии Reels + структуру по дням. Таблицу удобно перенести в Google Sheets и открывать перед съёмкой.</p>
+
+    <div class="card">
+      <div class="card-eyebrow">Промт №4 — финальная сборка контента</div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Финальный мегапромт</span>
+          <button class="copy-btn" onclick="copyPrompt(this, 'p4')">Скопировать</button>
+        </div>
+        <div class="prompt-body" id="p4">Супер! Теперь напиши ко всем смыслам выше тексты постов без канцелярита и в моём стиле, а также 10 разговорных сценариев для Reels, которые я озвучу на фоне видео. Оформи результат в таблицу: колонка «Смысл», «Текст поста», «Сценарий Reels».</div>
+        <div class="prompt-tip">💡 Используйте этот промт после шагов 1–3 в том же чате. GPT помнит все предыдущие идеи и соберёт всё вместе.</div>
+      </div>
+    </div>
+
+    <div class="key-point">
+      <div class="key-label">Результат</div>
+      <p>Таблица с готовым контентом на неделю: каждый день — смысл, пост, сценарий. Открывайте перед записью и работайте по плану, не придумывая тему с нуля.</p>
+    </div>
+  </section>
+
+  <!-- 7. ПРИЁМЫ — СДЕЛАТЬ СВОИМ -->
+  <section class="section" id="s7">
+    <div class="section-label">07 — Важное</div>
+    <h2>Три приёма: как сделать текст своим</h2>
+
+    <p style="margin-bottom: 20px;">ChatGPT пишет правильно и грамотно — но не так, как вы. Подписчики считывают «нейросетевой» текст мгновенно. Три простых приёма исправляют это за минуту.</p>
+
+    <div class="tricks">
+      <div class="trick">
+        <div class="trick-icon">✂️</div>
+        <div>
+          <div class="trick-title">Уберите длинные тире</div>
+          <div class="trick-desc">Длинное тире — главный маркер нейросети. Замените его на короткий дефис или переформулируйте предложение.</div>
+          <div class="trick-example">Было: «Я устала — и решила всё изменить»<br>Стало: «Я устала. И решила всё изменить»</div>
+        </div>
+      </div>
+      <div class="trick">
+        <div class="trick-icon">🗣️</div>
+        <div>
+          <div class="trick-title">Добавьте личную историю</div>
+          <div class="trick-desc">Попросите ChatGPT или добавьте сами: конкретный момент из вашей жизни, детали, которые знаете только вы.</div>
+          <div class="trick-example">Промт: «Добавь историю как будто рассказываю подруге, без официоза»</div>
+        </div>
+      </div>
+      <div class="trick">
+        <div class="trick-icon">🔤</div>
+        <div>
+          <div class="trick-title">Замените ваши слова</div>
+          <div class="trick-desc">Прочитайте вслух. Где звучит «не как вы» — замените на свои обычные слова, смайлы, фразочки.</div>
+          <div class="trick-example">Правило 70/30: 70% от ChatGPT + 30% вашего голоса = текст, который хочется читать</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="key-point">
+      <div class="key-label">Главная ошибка</div>
+      <p>Ctrl+C → Ctrl+V без правки. Всегда вычитывайте текст перед публикацией и добавляйте хотя бы несколько деталей от себя.</p>
+    </div>
+  </section>
+
+  <!-- 8. ПРАКТИКА -->
+  <section class="section" id="s8">
+    <div class="section-label">08 — Практика</div>
+    <h2>Задание: контент-план на 10 дней</h2>
+
+    <div class="card">
+      <div class="card-eyebrow">Что сделать прямо сейчас</div>
+      <ol class="steps">
+        <li>
+          <div>
+            <div class="step-title">Откройте чат из Урока 1</div>
+            <div class="step-desc">Работаем в том же чате — GPT помнит контекст вашего блога.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Запросите 10 смыслов для вашей аудитории</div>
+            <div class="step-desc">Промт №1 — адаптируйте под свою нишу и подписчиков. Выберите 7–10 тем, которые вам близки.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Разверните 2–3 идеи в посты</div>
+            <div class="step-desc">Промт №2. Проверьте: нет ли длинных тире, не звучит ли как GPT? Добавьте 30% своего.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Получите 10 заголовков для Reels</div>
+            <div class="step-desc">Промт №3. Выберите 3–5 лучших — сохраните отдельно.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="step-title">Соберите всё в таблицу</div>
+            <div class="step-desc">Промт №4. Скопируйте в Google Sheets — ваш контент-план готов.</div>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="divider">Чеклист выполнения</div>
+
+    <ul class="checklist" id="checklist">
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Открыла чат из урока 1</div>
+          <div class="task-meta">Шаг 1</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Получила 10 смыслов и выбрала лучшие</div>
+          <div class="task-meta">Шаг 2 · Промт №1</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Развернула 2–3 идеи в живые посты</div>
+          <div class="task-meta">Шаг 3 · Промт №2</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Получила 10 заголовков для Reels</div>
+          <div class="task-meta">Шаг 4 · Промт №3</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Собрала всё в таблицу и перенесла в Google Sheets</div>
+          <div class="task-meta">Шаг 5 · Промт №4</div>
+        </div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div>
+          <div class="task-title">Вычитала тексты, убрала тире, добавила своё</div>
+          <div class="task-meta">Правило 70/30</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="progress-wrap" style="margin-top: 16px;">
+      <div class="progress-label">
+        <span>Прогресс урока</span>
+        <span id="progressText">0 / 6</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-done" id="checkProgress" style="width: 0%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. ЗАМЕТКИ -->
+  <section class="section" id="s9">
+    <div class="section-label">09 — Заметки</div>
+    <h2>Мои промты и идеи</h2>
+
+    <div class="note-field">
+      <div class="note-label">Мои 7 смыслов на неделю</div>
+      <textarea class="note-textarea" rows="4" placeholder="1. &#10;2. &#10;3. &#10;..."></textarea>
+    </div>
+
+    <div class="note-field" style="margin-top: 12px;">
+      <div class="note-label">Заголовки для Reels, которые зацепили</div>
+      <textarea class="note-textarea" rows="3" placeholder="Запишите 3–5 лучших заголовков..."></textarea>
+    </div>
+  </section>
+
+  <!-- ИТОГ -->
+  <div class="callout-dark" id="callout">
+    <h3>Итог урока</h3>
+    <p>Пакетная работа — это другой уровень. Один сеанс с ChatGPT даёт контент-план на неделю, готовые тексты и заголовки. Не вымучиваете каждый пост — а работаете по плану. Остаётся только добавить 30% своего голоса, и контент становится вашим.</p>
+  </div>
+
+  <div class="btn-row">
+    <a href="m4-lesson1-chatgpt-intro.html" class="btn btn-ghost">← Урок 1</a>
+    <a href="m4-lesson3-custom-gpt.html" class="btn btn-primary">Урок 3 →</a>
+  </div>
+
+</div>
+
+<script>
+// Прогресс скролла
+window.addEventListener('scroll', () => {
+  const el = document.getElementById('progressFill');
+  const total = document.body.scrollHeight - window.innerHeight;
+  el.style.width = (window.scrollY / total * 100) + '%';
+});
+
+// Появление секций
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.id === 'callout') e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.section, .callout-dark').forEach(s => observer.observe(s));
+
+// Аккордеон дней
+function toggleDay(card) {
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.day-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+// Чеклист
+function toggleCheck(li) {
+  li.classList.toggle('done');
+  updateProgress();
+}
+function updateProgress() {
+  const items = document.querySelectorAll('#checklist li');
+  const done = document.querySelectorAll('#checklist li.done').length;
+  document.getElementById('progressText').textContent = done + ' / ' + items.length;
+  document.getElementById('checkProgress').style.width = (done / items.length * 100) + '%';
+}
+
+// Копирование промтов
+function copyPrompt(btn, id) {
+  const el = document.getElementById(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Скопировано ✓';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Скопировать';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
