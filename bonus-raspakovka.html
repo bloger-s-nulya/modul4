@@ -439,7 +439,7 @@ body {
     <div class="chips">
       <span class="chip">15 вопросов</span>
       <span class="chip">Ответы голосом</span>
-      <span class="chip">4 промта</span>
+      <span class="chip">1 промт</span>
       <span class="chip">Все тарифы</span>
     </div>
   </header>
@@ -455,8 +455,8 @@ body {
     <a href="#part2" class="part-tab">
       <div class="part-tab-num">Часть 2</div>
       <span class="part-tab-icon">🧩</span>
-      <div class="part-tab-title">Из ответов – в контент</div>
-      <div class="part-tab-sub">Портрет, темы, шапка профиля</div>
+      <div class="part-tab-title">Что получите</div>
+      <div class="part-tab-sub">Портрет, 30 тем, шапка профиля</div>
     </a>
   </div>
 
@@ -497,7 +497,7 @@ body {
       </li>
       <li>
         <div>
-          <div class="step-title">Вставьте промт 1</div>
+          <div class="step-title">Вставьте промт</div>
           <div class="step-desc">Впишите пару строк о себе вместо заготовки в скобках. Вопросы уже внутри промта. Сначала ChatGPT спросит, сколько вопросов задавать за раз: по 1, по 2–3 или целым блоком.</div>
         </div>
       </li>
@@ -511,19 +511,19 @@ body {
       <li>
         <div>
           <div class="step-title">Делайте перерывы</div>
-          <div class="step-desc">Можно в 2–3 захода: вернитесь в тот же чат и напишите «продолжаем». Когда деталей хватит, ChatGPT напишет «Всё понятно» – переходите к части 2.</div>
+          <div class="step-desc">Можно в 2–3 захода: вернитесь в тот же чат и напишите «продолжаем». Когда вопросы закончатся, ChatGPT сам соберёт результат – что именно, смотрите в части 2.</div>
         </div>
       </li>
     </ol>
 
     <div class="card" style="margin-top: 24px;">
-      <div class="card-eyebrow">Промт 1 – интервью</div>
+      <div class="card-eyebrow">Промт – интервью и результат</div>
       <div class="prompt-block">
         <div class="prompt-header">
           <span class="prompt-label">Начните с него</span>
           <button class="copy-btn" onclick="copyPrompt(this,'p1')">Скопировать</button>
         </div>
-        <div class="prompt-body" id="p1">Ты – специалист по распаковке личности для блогеров. Проведи со мной интервью, чтобы собрать мой портрет блогера и темы для постов.
+        <div class="prompt-body" id="p1">Ты – специалист по распаковке личности для блогеров. Проведи со мной интервью, а потом собери из моих ответов портрет блогера, темы для постов и шапку профиля.
 
 Я – <span class="ph">[кто вы: например, мама двоих детей, занимаюсь фитнесом дома, амбассадор FitStars]</span>. Блог веду в <span class="ph">[соцсеть]</span>.
 
@@ -532,7 +532,7 @@ body {
 – задавай вопросы из списка ниже в этом темпе и жди моего ответа. Если я попрошу ускориться или замедлиться – меняй темп;
 – если ответ короткий или без примеров, задай 1–2 уточняющих вопроса, потом переходи дальше;
 – перед новым блоком скажи, какой блок начинаем;
-– когда пройдём все вопросы и деталей будет достаточно, напиши «Всё понятно».
+– когда пройдём все вопросы, сразу, без отдельной команды, выдай результат (что в нём – в конце промта).
 
 Вопросы:
 
@@ -560,7 +560,11 @@ body {
 13. Чем вы можете им помочь?
 14. Зачем вам блог? Чего хотите добиться через год?
 15. О чём вы точно не хотите рассказывать в блоге?
-</div>
+
+Результат после интервью – пиши моими словами из ответов, ничего не придумывай:
+1. Мой портрет блогера: кто я – в 3 предложениях; моя история – главные повороты, которые стоит рассказать подписчикам; мои ценности и убеждения – 5 пунктов; в чём я разбираюсь и чему могу научить; чем я отличаюсь от других блогеров в моей теме; как я говорю – мои слова, интонация, юмор.
+2. 30 тем для блога по рубрикам: личные истории, полезные советы, мои взгляды и мнения, закулисье моей жизни. К каждой теме – из какого моего ответа она выросла и формат: пост, сторис или Reels.
+3. 5 вариантов шапки профиля для моей соцсети: кто я, чем полезна подписчикам и зачем на меня подписываться. До 150 знаков, без канцелярита.</div>
         <div class="prompt-tip">💡 Отвечать голосом быстрее и живее, чем печатать. Оговорки и повторы не страшны – ChatGPT поймёт.</div>
       </div>
     </div>
@@ -575,51 +579,22 @@ body {
 
   <section class="section" id="part2">
     <div class="section-label">Часть 2 из 2</div>
-    <div class="section-part">🧩 Из ответов – в контент</div>
-    <h2>Собираем портрет и темы для блога</h2>
+    <div class="section-part">🧩 Что получите</div>
+    <h2>Портрет, темы и шапка профиля – в конце того же чата</h2>
 
-    <p style="margin-bottom: 16px;">ChatGPT написал «Всё понятно». Не закрывайте чат: он помнит все ваши ответы. Теперь по очереди вставляйте промты 2, 3 и 4.</p>
+    <p style="margin-bottom: 16px;">Отдельно ничего вставлять не нужно. Когда вопросы закончатся, ChatGPT сам выдаст 3 вещи:</p>
 
     <div class="card">
-      <div class="card-eyebrow">Промт 2 – портрет блогера</div>
-      <div class="prompt-block">
-        <div class="prompt-header">
-          <span class="prompt-label">Сразу после уточнений</span>
-          <button class="copy-btn" onclick="copyPrompt(this,'p2')">Скопировать</button>
-        </div>
-        <div class="prompt-body" id="p2">На основе моих ответов собери мой портрет блогера:
-1. Кто я – в 3 предложениях.
-2. Моя история – главные повороты, которые стоит рассказать подписчикам.
-3. Мои ценности и убеждения – 5 пунктов.
-4. В чём я разбираюсь и чему могу научить.
-5. Чем я отличаюсь от других блогеров в моей теме.
-6. Как я говорю – мои слова, интонация, юмор.
-Пиши моими словами из ответов, ничего не придумывай.</div>
-        <div class="prompt-tip">💡 Прочитайте портрет. Если что-то звучит не про вас, так и напишите: «пункт 3 не про меня, на самом деле…». ChatGPT поправит.</div>
-      </div>
+      <ol class="steps">
+        <li><div><div class="step-title">Портрет блогера</div><div class="step-desc">Кто вы, ваша история, ценности, в чём разбираетесь, чем отличаетесь от других и как говорите.</div></div></li>
+        <li><div><div class="step-title">30 тем для блога</div><div class="step-desc">По рубрикам, с форматом: пост, сторис или Reels. Это контент-план на месяц – каждую тему можно развернуть по схеме из Урока 2.</div></div></li>
+        <li><div><div class="step-title">5 вариантов шапки профиля</div><div class="step-desc">Выберите один или соберите свой из нескольких.</div></div></li>
+      </ol>
     </div>
 
-    <div class="card">
-      <div class="card-eyebrow">Промт 3 – темы для блога</div>
-      <div class="prompt-block">
-        <div class="prompt-header">
-          <span class="prompt-label">Когда портрет готов</span>
-          <button class="copy-btn" onclick="copyPrompt(this,'p3')">Скопировать</button>
-        </div>
-        <div class="prompt-body" id="p3">Из моих ответов составь 30 тем для блога. Раздели их на рубрики: личные истории, полезные советы, мои взгляды и мнения, закулисье моей жизни. К каждой теме добавь, из какого моего ответа она выросла, и подскажи формат: пост, сторис или Reels.</div>
-        <div class="prompt-tip">💡 Получится контент-план на месяц. Каждую тему можно развернуть в пост или серию сторис по схеме из Урока 2.</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-eyebrow">Промт 4 – шапка профиля</div>
-      <div class="prompt-block">
-        <div class="prompt-header">
-          <span class="prompt-label">Если хотите обновить профиль</span>
-          <button class="copy-btn" onclick="copyPrompt(this,'p4')">Скопировать</button>
-        </div>
-        <div class="prompt-body" id="p4">На основе моего портрета предложи 5 вариантов шапки профиля для <span class="ph">[соцсеть]</span>: кто я, чем полезна подписчикам и зачем на меня подписываться. До 150 знаков, без канцелярита.</div>
-      </div>
+    <div class="key-point" style="margin-top: 24px;">
+      <div class="key-label">Если что-то не про вас</div>
+      <p>Так и напишите или скажите голосом: «пункт 3 не про меня, на самом деле…». ChatGPT поправит. Можно попросить ещё 10 тем или другие варианты шапки.</p>
     </div>
 
     <div class="lesson-ref" style="margin-top: 24px;">
@@ -637,18 +612,10 @@ body {
     <h2>Что сделать</h2>
 
     <div class="card">
-      <div class="card-eyebrow">Часть 1 – интервью</div>
       <ol class="steps">
-        <li><div><div class="step-title">Откройте новый чат и вставьте промт 1</div><div class="step-desc">Впишите о себе пару строк вместо заготовки в скобках.</div></div></li>
-        <li><div><div class="step-title">Ответьте голосом на вопросы ChatGPT</div><div class="step-desc">Можно в 2–3 захода – возвращайтесь в тот же чат.</div></div></li>
-      </ol>
-    </div>
-
-    <div class="card" style="margin-top: 12px;">
-      <div class="card-eyebrow">Часть 2 – контент</div>
-      <ol class="steps">
-        <li><div><div class="step-title">Запустите промт 2 – получите портрет блогера</div></div></li>
-        <li><div><div class="step-title">Запустите промт 3 – получите 30 тем</div></div></li>
+        <li><div><div class="step-title">Откройте новый чат и вставьте промт</div><div class="step-desc">Впишите о себе пару строк вместо заготовки в скобках.</div></div></li>
+        <li><div><div class="step-title">Ответьте голосом на вопросы ChatGPT</div><div class="step-desc">В удобном темпе, можно в 2–3 захода – возвращайтесь в тот же чат.</div></div></li>
+        <li><div><div class="step-title">Проверьте портрет, темы и шапку – поправьте, что не про вас</div></div></li>
         <li><div><div class="step-title">Сохраните портрет в заметки или в Custom GPT</div></div></li>
       </ol>
     </div>
@@ -658,19 +625,19 @@ body {
     <ul class="checklist" id="checklist">
       <li onclick="toggleCheck(this)">
         <div class="check-box"></div>
-        <div><div class="task-title">Начала интервью в отдельном чате</div><div class="task-meta">Часть 1 · Промт 1</div></div>
+        <div><div class="task-title">Начала интервью в отдельном чате</div><div class="task-meta">Часть 1</div></div>
       </li>
       <li onclick="toggleCheck(this)">
         <div class="check-box"></div>
-        <div><div class="task-title">Ответила на все вопросы – ChatGPT написал «Всё понятно»</div><div class="task-meta">Часть 1</div></div>
+        <div><div class="task-title">Ответила на все вопросы</div><div class="task-meta">Часть 1</div></div>
       </li>
       <li onclick="toggleCheck(this)">
         <div class="check-box"></div>
-        <div><div class="task-title">Получила портрет блогера и поправила то, что не про меня</div><div class="task-meta">Часть 2 · Промт 2</div></div>
+        <div><div class="task-title">Получила портрет блогера и поправила то, что не про меня</div><div class="task-meta">Часть 2</div></div>
       </li>
       <li onclick="toggleCheck(this)">
         <div class="check-box"></div>
-        <div><div class="task-title">Получила 30 тем для блога</div><div class="task-meta">Часть 2 · Промт 3</div></div>
+        <div><div class="task-title">Получила 30 тем для блога</div><div class="task-meta">Часть 2</div></div>
       </li>
       <li onclick="toggleCheck(this)">
         <div class="check-box"></div>
@@ -700,10 +667,6 @@ body {
     <p>У вас есть портрет блогера и 30 тем из вашей собственной жизни. Распаковку делают один раз, а пользуются ей месяцами: каждый раз, когда не знаете, о чём написать, возвращайтесь к ней.</p>
   </div>
 
-  <div class="btn-row">
-    <a href="bonus.html" class="btn btn-ghost">← Бонус: голосовые и свой стиль</a>
-    <button class="btn btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Наверх</button>
-  </div>
 
 </div>
 
